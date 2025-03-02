@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Quelea : A Haskell library for declarative programming over eventually consistent store (Cassandra).">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/Quelea/stylesheets/stylesheet.css">
+
+    <title>Quelea</title>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kayceesrk/Quelea">View on GitHub</a>
+
+          <h1 id="project_title"><a href="/Quelea/index.html">Quelea</a></h1>
+          <h2 id="project_tagline">A Haskell library for declarative programming over eventually consistent store (Cassandra).</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gowthamk/Quelea/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gowthamk/Quelea/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h2>Troubleshooting</h2>
+<!-- p class="meta">12 Feb 2015</p -->
+
+<div class="post">
+<h3 id="index">Index</h3>
+
+<ul>
+  <li><a href="/Quelea/troubleshooting.html#zmq-error">ZMQError - Address already in use</a></li>
+  <li><a href="/Quelea/troubleshooting.html#table-delete-error">Cannot add already existing column family</a></li>
+  <li><a href="/Quelea/troubleshooting.html#unconfigured-error">Unconfigured column family error</a></li>
+  <li><a href="/Quelea/troubleshooting.html#thread-hangs-error">One of the client threads hangs</a></li>
+  <li><a href="/Quelea/troubleshooting.html#unresponsive-error">Program becomes unresponsive</a></li>
+</ul>
+
+<div id="zmq-error"></div>
+
+<h3 id="zmqerror---address-already-in-use">ZMQError - Address already in use</h3>
+
+<p>Here is how the error looks:</p>
+
+<p><img src="/Quelea/assets/zmq-error-1.png" alt="ZMQ-error-1" /></p>
+
+<p>This error occurs when a previous run of the experiment did not
+perform proper cleanup before terminating, resulting on zombie
+processes:</p>
+
+<p><img src="/Quelea/assets/zmq-error-2.png" alt="ZMQ-error-2" /></p>
+
+<p>The fix is to <code>kill</code> such processes.</p>
+
+<div id="table-delete-error"></div>
+
+<h3 id="cannot-add-already-existing-column-family">Cannot add already existing column family</h3>
+
+<p>Here is how the error looks like:</p>
+
+<p><img src="/Quelea/assets/table-delete-error-1.png" alt="table-delete-error-1" /></p>
+
+<p>This error occurs when a previous run of the experiment failed to
+delete all Cassandra column families that were created during the
+run. Straightforward fix is to run the same binary with <code>--kind Drop</code>
+option:</p>
+
+<p><img src="/Quelea/assets/table-delete-error-2.png" alt="table-delete-error-2" /></p>
+
+<p>Another way is to use <code>cqlsh</code> to manually drop tables:</p>
+
+<pre><code>$ cqlsh
+cqlsh&gt; USE Codeec;
+cqlsh&gt; DROP TABLE bankaccount;
+cqlsh&gt; DROP TABLE bankaccount_lock;
+cqlsh&gt; DROP TABLE bankaccount_gc;
+</code></pre>
+
+<div id="unconfigured-error"></div>
+
+<h3 id="unconfigured-column-family-error">Unconfigured column family error</h3>
+
+<p>Here is how the error looks like:</p>
+
+<p><img src="/Quelea/assets/unconfigured-error-1.png" alt="unconfigured-error-1" /></p>
+
+<p>This error occurs when a table being used by the current run of the
+experiment was dropped in a concurrent run. The fix is to simply rerun
+the experiment.</p>
+
+<div id="thread-hangs-error"></div>
+
+<h3 id="one-of-the-client-threads-hangs">One of the client threads hangs</h3>
+
+<p>For example, consider the following sample run:</p>
+
+<p><img src="/Quelea/assets/thread-hangs-error-1.png" alt="thread-hangs-error-1" /></p>
+
+<p>Even though <code>numThreads</code> option is set to 4, only three threads ever
+make progress. The other thread simply hangs. This error occurs
+frequently on a VM that is severely resource constrained. The exact
+cause of the bug is not yet known. Increasing the resources allocated
+to the VM will prevent this error from occuring. If this is not
+possible, we suggest that you rerun the experiment until you generate
+an execution where all threads make progress.</p>
+
+<div id="unresponsive-error"></div>
+
+<h3 id="program-becomes-unresponsive">Program becomes unresponsive</h3>
+
+<p>This is a more severe manifestation of the above bug, where none of
+the threads make progress. As with the previous case, we suggest that
+you rerun the experiment until you generate an execution where all
+threads make progress.</p>
+
+</div>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript">
+MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    });
+</script>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Quelea maintained by <a
+        href="https://github.com/kayceesrk">KC Sivaramakrishnan</a>
+        and <a
+        href="https://github.com/gowthamk">Gowtham Kaki</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

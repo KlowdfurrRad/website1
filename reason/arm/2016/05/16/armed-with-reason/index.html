@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Armed with Reason &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Armed with Reason</h1>
+  <span class="post-date">16 May 2016</span>
+  <p>This is a short tutorial on how to build
+<a href="http://facebook.github.io/reason/">Reason</a> apps for an ARM target with the help
+of Docker. I am using <a href="https://blog.docker.com/2016/03/docker-for-mac-windows-beta/">Docker for
+Mac</a>, which is
+still under beta program. Using Docker for development has two important
+advantages over traditional cross-compilation. First, the Reason toolchain comes
+packaged as a Docker image and hence no local installation is necessary.
+Secondly, cross-compilers are often tricky to get right. Docker for Mac comes
+with multiarch support and hence removes the need for traditional
+cross-compilation.</p>
+
+<!--more-->
+
+<h1 id="setup">Setup</h1>
+
+<p>I will be testing using a <a href="https://en.wikipedia.org/wiki/Cubieboard">Cubietruck</a>
+running Linaro Desktop. But these instructions should also work for
+<a href="https://www.raspbian.org/">Raspbian</a>, a Debian optimized for the Raspberry pi
+hardware.</p>
+
+<h1 id="build">Build</h1>
+
+<p>First get the dockerfile for Reason toolchain and build the image.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">mkdir</span> /tmp/reason_arm
+<span class="nv">$ </span><span class="nb">cd</span> /tmp/reason_arm
+<span class="nv">$ </span>wget https://gist.githubusercontent.com/kayceesrk/dc37a6ffeeda2dea338550dd4e8ad7ec/raw/8e136b8b8170758bd5e9c0cacf70fed4f9ce3df1/Dockerfile
+<span class="nv">$ </span>docker build <span class="nt">-t</span> reason-arm .</code></pre></figure>
+
+<p>All set! Let’s build a “Hello, World!” program.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">mkdir</span> /tmp/reason_arm_hello
+<span class="nv">$ </span><span class="nb">cd</span> /tmp/reason_arm_hello
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s1">'print_endline "Hello, Reason!"'</span> <span class="o">&gt;</span> hello.re
+<span class="nv">$ </span>docker run <span class="nt">-it</span> <span class="nt">-v</span> <span class="sb">`</span><span class="nb">pwd</span><span class="sb">`</span>:/src reason-arm
+<span class="nv">$ </span><span class="nb">cd</span> /src
+<span class="nv">$ </span>rebuild hello.native
+^C</code></pre></figure>
+
+<p>The build artifacts are found in the host machines <code class="language-plaintext highlighter-rouge">/tmp/reason_arm_hello/_build</code> directory.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>file _build/hello.native
+_build/hello.native: ELF 32-bit LSB executable, ARM, version 1 <span class="o">(</span>SYSV<span class="o">)</span>, dynamically linked <span class="o">(</span>uses shared libs<span class="o">)</span>, <span class="k">for </span>GNU/Linux 2.6.32, not stripped</code></pre></figure>
+
+<p>We can now transfer the file to the cubietruck and run it. My cubietruck’s IP
+address is <code class="language-plaintext highlighter-rouge">192.168.0.9</code>.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>scp _build/hello.native linaro@192.168.0.9:
+<span class="nv">$ </span>ssh linaro@192.168.0.9
+Welcome to Linaro 13.04 <span class="o">(</span>GNU/Linux 3.4.61+ armv7l<span class="o">)</span>
+
+<span class="k">*</span> Documentation:  https://wiki.linaro.org/
+Last login: Fri May 20 08:35:01 2016 from 192.168.0.3
+linaro@cubietruck:~<span class="nv">$ </span>./hello.native
+Hello, Reason!</code></pre></figure>
+
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/offcputime/bpfcc/2024/07/24/offcputime-analysis/">
+            Off-CPU-time analysis
+            <small>24 Jul 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/gdb/2024/01/20/gdb-ocaml/">
+            Getting Started with GDB on OCaml
+            <small>20 Jan 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/prolog/jupyter/notebooks/2020/01/19/OCaml-Prolog-Jupyter/">
+            Teaching OCaml and Prolog through Jupyter Notebooks
+            <small>19 Jan 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+<hr>
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+</a>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">kcsrk dot info</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="http://kcsrk.info" property="cc:attributionName" rel="cc:attributionURL">KC Sivaramakrishnan</a>
+is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

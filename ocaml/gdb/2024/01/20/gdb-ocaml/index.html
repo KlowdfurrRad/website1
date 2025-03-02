@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Getting Started with GDB on OCaml &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Getting Started with GDB on OCaml</h1>
+  <span class="post-date">20 Jan 2024</span>
+  <p>A number of folks who regularly use OCaml were surprised to learn that you can
+reasonably debug OCaml programs using gdb. The aim of the post is to show the
+first steps in using gdb on OCaml programs.</p>
+
+<!--more-->
+
+<p>Let’s consider the following program:</p>
+
+<div class="language-ocaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">(* fib.ml *)</span>
+<span class="k">let</span> <span class="k">rec</span> <span class="n">fib</span> <span class="n">n</span> <span class="o">=</span> 
+  <span class="k">if</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">then</span> <span class="mi">0</span>
+  <span class="k">else</span> <span class="k">if</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">then</span> <span class="mi">1</span>
+  <span class="k">else</span> <span class="n">fib</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span> <span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="n">main</span> <span class="bp">()</span> <span class="o">=</span> 
+  <span class="k">let</span> <span class="n">r</span> <span class="o">=</span> <span class="n">fib</span> <span class="mi">20</span> <span class="k">in</span> 
+  <span class="nn">Printf</span><span class="p">.</span><span class="n">printf</span> <span class="s2">"fib(20) = %d"</span> <span class="n">r</span>
+
+<span class="k">let</span> <span class="n">_</span> <span class="o">=</span> <span class="n">main</span> <span class="bp">()</span>
+</code></pre></div></div>
+
+<p>Let’s compile this program. I’m using OCaml version 5.1.1.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ocamlopt <span class="nt">--version</span>
+5.1.1
+<span class="nv">$ </span>ocamlopt <span class="nt">-g</span> <span class="nt">-o</span> fib.exe fib.ml
+<span class="nv">$ $ </span>./fib.exe 20
+fib<span class="o">(</span>20<span class="o">)</span> <span class="o">=</span> 6765
+</code></pre></div></div>
+
+<p>As you can see, the program prints the 20th Fibonacci number. Let’s examine this
+program under gdb. Before we venture any further, I highly recommend watching
+this <a href="https://www.youtube.com/watch?app=desktop&amp;v=PorfLSr3DDI">15-minute video</a>
+that shows a number of gdb tricks. Let’s start a gdb session.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb ./fib.exe
+</code></pre></div></div>
+
+<h2 id="setting-breakpoints">Setting breakpoints</h2>
+
+<p>Let’s set a break point at the <code class="language-plaintext highlighter-rouge">fib</code> function. When OCaml functions are
+compiled, their names are mangled. OCaml 5.1.1 uses the following mangling
+scheme <code class="language-plaintext highlighter-rouge">caml&lt;MODULE_NAME&gt;.&lt;FUNCTION_NAME&gt;_&lt;NNN&gt;</code> where <code class="language-plaintext highlighter-rouge">NNN</code> is a randomly
+generated number. For the <code class="language-plaintext highlighter-rouge">fib</code> function, since it is under the file <code class="language-plaintext highlighter-rouge">fib.ml</code>,
+the module name is <code class="language-plaintext highlighter-rouge">Fib</code>. Since we can’t guess <code class="language-plaintext highlighter-rouge">NNN</code>, we use tab completion to
+help identify the function.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> <span class="nb">break </span>camlFib.fib_ <span class="c">#press tab</span>
+<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">break </span>camlFib.fib_269 <span class="c">#269 happens to be the randomly generated number</span>
+                            <span class="c">#on my machine.</span>
+<span class="o">(</span>gdb<span class="o">)</span> Breakpoint 1 at 0x3d160: file fib.ml, line 1.
+</code></pre></div></div>
+
+<p>You can also set a breakpoint using gdb’s file name and line number combination.
+Let’s set another break point at the <code class="language-plaintext highlighter-rouge">main</code> function, which is at line number 6
+in <code class="language-plaintext highlighter-rouge">fib.ml</code>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> <span class="nb">break </span>fib.ml:6
+Breakpoint 2 at 0x3d1d0: file fib.ml, line 6.
+</code></pre></div></div>
+
+<p>Let’s run the program.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> r
+Starting program: /home/kc/temp/fib.exe 
+<span class="o">[</span>Thread debugging using libthread_db enabled]
+Using host libthread_db library <span class="s2">"/lib/x86_64-linux-gnu/libthread_db.so.1"</span><span class="nb">.</span>
+
+Breakpoint 2, camlFib.main_271 <span class="o">()</span> at fib.ml:6
+6       <span class="nb">let </span>main <span class="o">()</span> <span class="o">=</span>
+</code></pre></div></div>
+
+<p>The program execution starts in the gdb session and we stop at the breakpoint
+installed at <code class="language-plaintext highlighter-rouge">main</code>. gdb has a nice TUI mode for stepping through the file. This
+can be activated with <code class="language-plaintext highlighter-rouge">ctrl+x+a</code> key combination, which should show a screen
+similar to the following.</p>
+
+<p align="center"> <img src="/assets/gdb/01.png" /> </p>
+
+<p>Notice that we can see both the breakpoints installed in this file. The current
+line is highlighted.</p>
+
+<h2 id="examining-the-stack">Examining the stack</h2>
+
+<p>You can step through the OCaml program with gdb commands <code class="language-plaintext highlighter-rouge">n</code> and <code class="language-plaintext highlighter-rouge">s</code>. After a
+few <code class="language-plaintext highlighter-rouge">n</code>s, you can examine the backtrace using the <code class="language-plaintext highlighter-rouge">bt</code> command.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> bt
+<span class="c">#0  camlFib.fib_269 () at fib.ml:1</span>
+<span class="c">#1  0x00005555555911a1 in camlFib.fib_269 () at fib.ml:4</span>
+<span class="c">#2  0x00005555555911a1 in camlFib.fib_269 () at fib.ml:4</span>
+<span class="c">#3  0x00005555555911a1 in camlFib.fib_269 () at fib.ml:4</span>
+<span class="c">#4  0x00005555555911a1 in camlFib.fib_269 () at fib.ml:4</span>
+<span class="c">#5  0x00005555555911f1 in camlFib.main_271 () at fib.ml:7</span>
+<span class="c">#6  0x000055555559129a in camlFib.entry () at fib.ml:10</span>
+<span class="c">#7  0x000055555558eb0b in caml_program ()</span>
+<span class="c">#8  &lt;signal handler called&gt;</span>
+<span class="c">#9  0x00005555555dd306 in caml_startup_common (pooling=&lt;optimised out&gt;, argv=0x7fffffffe008) at runtime/startup_nat.c:132</span>
+<span class="c">#10 caml_startup_common (argv=0x7fffffffe008, pooling=&lt;optimised out&gt;) at runtime/startup_nat.c:88</span>
+<span class="c">#11 0x00005555555dd37f in caml_startup_exn (argv=&lt;optimised out&gt;) at runtime/startup_nat.c:139</span>
+<span class="c">#12 caml_startup (argv=&lt;optimised out&gt;) at runtime/startup_nat.c:144</span>
+<span class="c">#13 caml_main (argv=&lt;optimised out&gt;) at runtime/startup_nat.c:151</span>
+<span class="c">#14 0x000055555558e8f2 in main (argc=&lt;optimised out&gt;, argv=&lt;optimised out&gt;) at runtime/main.c:37</span>
+</code></pre></div></div>
+
+<p>As you can see the backtrace includes the recursive calls to the <code class="language-plaintext highlighter-rouge">fib</code> function,
+the <code class="language-plaintext highlighter-rouge">main</code> function in <code class="language-plaintext highlighter-rouge">fib.ml</code>, followed by a number of functions from the
+OCaml runtime, and finally ending at the <code class="language-plaintext highlighter-rouge">main</code> function.</p>
+
+<p>Note that <code class="language-plaintext highlighter-rouge">&lt;signal handler called&gt;</code> is a misnomer and is not an actual signal
+handler. OCaml 5 supports <a href="https://v2.ocaml.org/manual/effects.html">effect
+handlers</a> with the help of runtime
+managed stack segments for the OCaml stack. There is also a single C stack that
+is used by all the fibers that run on a
+<a href="https://v2.ocaml.org/manual/parallelism.html">domain</a>, our unit of parallelism.
+The <code class="language-plaintext highlighter-rouge">&lt;signal handler called&gt;</code> represents a frame where the control switches
+between the C stack (managed by the OS) and the OCaml stack (managed by the
+OCaml runtime). The OCaml runtime marks these frames where the stack are split
+as signal handler frames so that gdb doesn’t complain about stack corruption;
+gdb expects stacks to grow down, which may not be true if the stack segments are
+in different parts of the memory address space. You will also find such <code class="language-plaintext highlighter-rouge">&lt;signal
+handler called&gt;</code> frames between OCaml fibers (when using effect handlers) and
+when OCaml calls into the (C) runtime. You can find more details about the stack
+layout in the <a href="https://dl.acm.org/doi/10.1145/3453483.3454039">PLDI 2021 paper on OCaml effect
+handlers</a>.</p>
+
+<h2 id="examining-values">Examining values</h2>
+
+<p>There isn’t good support for examining OCaml values in gdb unlike C. That said,
+given the <a href="https://dev.realworldocaml.org/runtime-memory-layout.html">uniform value representation of
+OCaml</a>, with a bit of
+information about the OCaml calling convention, we can start to examine the
+values. It is useful to note that OCaml 5.1.1 on x86 passes the first <a href="https://github.com/ocaml/ocaml/blob/b2e7c4b7e93abb8faade7396730e59c1922c2e9f/asmcomp/amd64/proc.ml#L53">10
+arguments in
+registers</a>.
+In particular, the first argument is in the register <code class="language-plaintext highlighter-rouge">rax</code>. So the argument to
+the <code class="language-plaintext highlighter-rouge">fib</code> function should be in the <code class="language-plaintext highlighter-rouge">rax</code> register. We also know that the
+argument to <code class="language-plaintext highlighter-rouge">fib</code> is an integer. OCaml uses 63-bit tagged integers (on 64-bit
+machines) with the least-significant bit is 1. Given a machine word or a
+register holding an OCaml integer, the integer value is obtained by right
+shifting the value by 1.</p>
+
+<p>Putting it all together, we can get the argument value of <code class="language-plaintext highlighter-rouge">fib</code> at the
+breakpoint at the entry to <code class="language-plaintext highlighter-rouge">fib</code> as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p <span class="nv">$rax</span> <span class="o">&gt;&gt;</span> 1
+<span class="nv">$2</span> <span class="o">=</span> 12
+</code></pre></div></div>
+
+<p>Given that we’ve already stepped through the program several times, the current
+call for me corresponds to <code class="language-plaintext highlighter-rouge">fib(12)</code>. Let’s see what’s the next argument by
+continuing the program until we hit the breakpoint again.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> c
+Continuing.
+
+Breakpoint 1, camlFib.fib_269 <span class="o">()</span> at fib.ml:1
+<span class="o">(</span>gdb<span class="o">)</span> p <span class="nv">$rax</span> <span class="o">&gt;&gt;</span> 1
+<span class="nv">$3</span> <span class="o">=</span> 10
+</code></pre></div></div>
+
+<p>Observe that this corresponds to the recursive call <code class="language-plaintext highlighter-rouge">fib(10)</code>, which must mean
+that the RHS recursive call is the one being invoked. Note that the evaluation
+order of arguments in OCaml is unspecified. The 5.1.1 implementation does
+right-to-left evaluation of arguments (to the <code class="language-plaintext highlighter-rouge">(+)</code> function in this case),
+which can be confirmed with the following program:</p>
+
+<div class="language-ocaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">$</span> <span class="n">cat</span> <span class="n">eval_order</span><span class="o">.</span><span class="n">ml</span>
+<span class="k">let</span> <span class="n">_</span> <span class="o">=</span>
+  <span class="p">(</span><span class="n">print_endline</span> <span class="s2">"hello"</span><span class="p">;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">print_endline</span> <span class="s2">"world"</span><span class="p">;</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">$</span> <span class="n">ocamlopt</span><span class="o">.</span><span class="n">opt</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">o</span> <span class="n">eval_order</span><span class="o">.</span><span class="n">exe</span> <span class="n">eval_order</span><span class="o">.</span><span class="n">ml</span>
+<span class="o">$</span> <span class="o">./</span><span class="n">eval_order</span><span class="o">.</span><span class="n">exe</span>
+<span class="n">world</span>
+<span class="n">hello</span>
+</code></pre></div></div>
+
+<h2 id="advanced-printing">Advanced printing</h2>
+
+<p>As you can observe, examining values this way is cumbersome. The OCaml compiler
+distribution has some rudimentary scripts to make it easier to examine OCaml
+values in gdb. Note that this was developed by OCaml maintainers to develop the
+compiler, and was not designed to serve end user needs. That said, let’s dive
+in.</p>
+
+<p>Since we are on OCaml 5.1.1, let’s check out the source code for 5.1.1
+first.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># I'm in ~/repos directory on my machine *)</span>
+<span class="nv">$ </span>git clone https://github.com/ocaml/ocaml <span class="nt">--branch</span> 5.1.1
+</code></pre></div></div>
+
+<p>Let’s start a new gdb session, load the gdb script and get to the desired
+breakpoint.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>gdb ./fib.exe
+<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">source</span> ~/repos/ocaml/tools/gdb_ocamlrun.py
+<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">break </span>fib.ml:1
+Breakpoint 1 at 0x3d160: file fib.ml, line 1.
+<span class="o">(</span>gdb<span class="o">)</span> r
+Starting program: /home/kc/temp/fib.exe 
+<span class="o">[</span>Thread debugging using libthread_db enabled]
+Using host libthread_db library <span class="s2">"/lib/x86_64-linux-gnu/libthread_db.so.1"</span><span class="nb">.</span>
+
+Breakpoint 1, camlFib.fib_269 <span class="o">()</span> at fib.ml:1
+1       <span class="nb">let </span>rec fib n <span class="o">=</span>
+</code></pre></div></div>
+
+<p>As earlier, the first argument is in <code class="language-plaintext highlighter-rouge">rax</code> register. We can examine the value
+now with the help of the script.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span>value<span class="o">)</span><span class="nv">$rax</span>
+<span class="nv">$1</span> <span class="o">=</span> I<span class="o">(</span>20<span class="o">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">value</code> is the type of OCaml values defined in OCaml runtime. The script
+<code class="language-plaintext highlighter-rouge">tools/gdb_ocamlrun.py</code> installs a pretty printer for the values of type
+<code class="language-plaintext highlighter-rouge">value</code>. Here, it prints that the argument is the integer 20.</p>
+
+<p>We can also print other kinds of OCaml values. In order to illustrate this,
+consider the following program:</p>
+
+<div class="language-ocaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">$</span> <span class="n">cat</span> <span class="n">test_blocks</span><span class="o">.</span><span class="n">ml</span>
+<span class="c">(* test_blocks.ml *)</span>
+
+<span class="k">type</span> <span class="n">t</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span> <span class="o">:</span> <span class="kt">string</span><span class="p">;</span> <span class="n">i</span> <span class="o">:</span> <span class="kt">int</span><span class="p">}</span>
+
+<span class="k">let</span> <span class="n">main</span> <span class="n">a</span> <span class="n">b</span> <span class="o">=</span>
+  <span class="n">print_endline</span> <span class="s2">"Hello, world!"</span><span class="p">;</span>
+  <span class="n">print_endline</span> <span class="n">a</span><span class="p">;</span>
+  <span class="n">print_endline</span> <span class="n">b</span><span class="o">.</span><span class="n">s</span>
+
+<span class="k">let</span> <span class="n">_</span> <span class="o">=</span> <span class="n">main</span> <span class="s2">"foo"</span> <span class="p">{</span><span class="n">s</span> <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">42</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>Let’s compile, start a gdb session and break at the <code class="language-plaintext highlighter-rouge">main</code> function.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ocamlopt <span class="nt">-g</span> <span class="nt">-o</span> test_blocks.exe test_blocks.ml                                                                                                               
+<span class="nv">$ </span>gdb ./test_blocks.exe
+<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">break </span>camlTest_blocks.main_272 
+Breakpoint 1 at 0x16ed0: file test_blocks.ml, line 5.
+<span class="o">(</span>gdb<span class="o">)</span> r
+Starting program: /home/kc/temp/test_blocks.exe 
+<span class="o">[</span>Thread debugging using libthread_db enabled]
+Using host libthread_db library <span class="s2">"/lib/x86_64-linux-gnu/libthread_db.so.1"</span><span class="nb">.</span>
+
+Breakpoint 1, camlTest_blocks.main_272 <span class="o">()</span> at test_blocks.ml:5
+5       <span class="nb">let </span>main a b <span class="o">=</span>
+<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">source</span> ~/repos/ocaml/tools/gdb_ocamlrun.py 
+</code></pre></div></div>
+
+<p>Let’s examine the two arguments to main.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span>value<span class="o">)</span><span class="nv">$rax</span>
+<span class="nv">$1</span> <span class="o">=</span> String_tag<span class="o">(</span><span class="s2">"foo"</span>, NOT_MARKABLE<span class="o">)</span>
+</code></pre></div></div>
+
+<p>The first argument is a string “foo”. <code class="language-plaintext highlighter-rouge">NOT_MARKABLE</code> is one of the GC colours
+used by OCaml 5, and represents objects that are not traced by the
+mark-and-sweep (major) GC. The string happens to be allocated in the <a href="https://en.wikipedia.org/wiki/Data_segment">data
+section</a> of the address space, and
+is not traced by the GC.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> info symbol <span class="nv">$rax</span>
+camlTest_blocks.4 <span class="k">in </span>section .data of /home/kc/temp/test_blocks.exe
+</code></pre></div></div>
+
+<p>Let’s examine the second argument.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p <span class="o">(</span>value<span class="o">)</span><span class="nv">$rbx</span>
+<span class="nv">$2</span> <span class="o">=</span> Block<span class="o">(</span>0, <span class="nv">wosize</span><span class="o">=</span>2, NOT_MARKABLE<span class="o">)</span>
+</code></pre></div></div>
+
+<p>The second argument, which is passed in the register <code class="language-plaintext highlighter-rouge">rbx</code>, is a record with two
+fields. Hence, the pretty printer says that it is a block with 2 fields.  We can
+print both values using gdb’s support for printing a range of values.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">(</span>gdb<span class="o">)</span> p <span class="k">*</span><span class="o">(</span>value<span class="k">*</span><span class="o">)</span><span class="nv">$rbx</span>@2                                                                 
+<span class="nv">$3</span> <span class="o">=</span> <span class="o">{</span>String_tag<span class="o">(</span><span class="s2">"bar"</span>, NOT_MARKABLE<span class="o">)</span>, I<span class="o">(</span>42<span class="o">)}</span>
+</code></pre></div></div>
+
+<p>We cast <code class="language-plaintext highlighter-rouge">rbx</code> to an array of <code class="language-plaintext highlighter-rouge">value</code>s and print the first two fields in the
+array. This shows that the fields are the string “bar” and integer 42.</p>
+
+<h2 id="more-for-later">More for later</h2>
+
+<p>There is a lot more to be said about debugging OCaml programs using gdb. We
+shall see them in subsequent posts if there is interest.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/offcputime/bpfcc/2024/07/24/offcputime-analysis/">
+            Off-CPU-time analysis
+            <small>24 Jul 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/prolog/jupyter/notebooks/2020/01/19/OCaml-Prolog-Jupyter/">
+            Teaching OCaml and Prolog through Jupyter Notebooks
+            <small>19 Jan 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/multicore/job/2019/09/16/1115-multicore-job/">
+            Multicore OCaml Jobs
+            <small>16 Sep 2019</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+<hr>
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+</a>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">kcsrk dot info</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="http://kcsrk.info" property="cc:attributionName" rel="cc:attributionURL">KC Sivaramakrishnan</a>
+is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

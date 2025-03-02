@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>CS3300 Monsoon 2022: Assignment 02 - Type Checker</title>
+  <meta name="description" content="CS3300 Compiler Design @ CSE IIT Madras">
+
+  <link rel="stylesheet" href="/cs3300_m22/_css/main.css">
+  <link rel="canonical" href="http://kayceesrk.github.io/cs3300_m22/assignments/typechecker">
+  <link rel="alternate" type="application/rss+xml" title="CS3300 Monsoon 2022" href="http://kayceesrk.github.io/cs3300_m22/feed.xml" />
+	<link rel="shortcut icon" href="/cs3300_m22/assets/favicon.ico">
+<link rel='stylesheet' id='open-sans-css'  href='//fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C600italic%2C300%2C400%2C600&#038;subset=latin%2Clatin-ext&#038;ver=4.2.4' type='text/css' media='all' />
+<link href='https://fonts.googleapis.com/css?family=Titillium+Web:600italic,600,400,400italic' rel='stylesheet' type='text/css'>
+
+
+
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<meta property="og:image" content="http://course-website.svmiller.com/_images/stand-and-deliver-fb.jpg"/>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/cs3300_m22/">CS3300 Monsoon 2022</a>
+
+
+    <nav class="site-nav">
+
+      <a href="#" class="menu-icon menu.open">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>  
+
+    <div class="trigger"><h1>Main Navigation</h1>
+
+ <ul class="menu">
+
+<!--          <li><a class="page-link" href="/cs3300_m22/"><i class="fa fa-home fa-lg"></i>Home</a></li> -->
+<li><a class="page-link" href="/cs3300_m22/schedule/"><i class="fa fa-list-ul fa-lg"></i> Schedule</a></li>
+<li><a class="page-link" href="/cs3300_m22/assignments/"><i class="fas fa-book"></i> Assignments</a></li>
+<li><a class="page-link" href="/cs3300_m22/resources/"><i class="fas fa-book-reader"></i> Resources</a></li>
+<li><a class="page-link" href="https://github.com/kayceesrk/cs3300_m22"><i class="fab fa-github"></i></a></li>
+<li><a class="page-link" href="http://kcsrk.info"><i class="fa fa-user fa-lg"></i></a></li>
+</ul>
+
+
+<!-- <ul class="menu">
+        <li> <a class="page-link" href="/about">About</a></li>
+        <li> <a class="page-link"  href="/blog">Blog</a>
+        <li> <a class="page-link" href="/blog">CV</a>
+        <li> <a class="page-link" href="/blog">For Students</a></li>
+        <li> <a class="page-link"  href="/blog">Research</a></a>
+        <li> <a class="page-link" href="/blog">Teaching</a>
+<ul class="sub-menu">
+	<li><a href="http://svmiller.com/teaching/posc-1020-introduction-to-international-relations/">POSC 1020 – Introduction to International Relations</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3410-quantitative-methods-in-political-science/">POSC 3410 – Quantitative Methods in Political Science</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3610-international-politics-in-crisis/">POSC 3610 – International Politics in Crisis</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3630-united-states-foreign-policy/">POSC 3630 – United States Foreign Policy</a></li>
+</ul></li>
+        <li> <a class="page-link" href="/blog">Miscellany</a>
+<ul class="sub-menu">
+	<li><a href="http://svmiller.com/teaching/posc-1020-introduction-to-international-relations/">Clean USAID Greenbook Data</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3410-quantitative-methods-in-political-science/">Journal of Peace Research *.bst File</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3610-international-politics-in-crisis/">My Custom Beamer Style</a></li>
+</ul> 
+
+</li>
+</ul> -->
+
+     </div>  
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Assignment 02 - Type Checker</h1>
+  </header>
+
+  <article class="post-content">
+    <table>
+  <tbody>
+    <tr>
+      <td>Release Date</td>
+      <td>23/08/2021</td>
+    </tr>
+    <tr>
+      <td>Deadline</td>
+      <td>11/09/2021, 23:59 hours</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><br /></p>
+
+<p>This assignment is the first part of a multi part project to write an optimizing
+compiler for Minijava. We start with the LL(k) grammar for minijava and follow
+simplification and optimization phases, similar to what is seen in a standard
+optimizing compiler. In this assignment, we will implement a type checker for
+the minijava compiler.</p>
+
+<p>Use JTB and JavaCC and write in Java one or more visitors which type check a
+MiniJava program. Your main file should be called <code class="language-plaintext highlighter-rouge">P1.java</code>, and if <code class="language-plaintext highlighter-rouge">A.java</code>
+contains a program to be type checked, then</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>javac P1.java
+<span class="nv">$ </span>java P1 &lt; A.java
+</code></pre></div></div>
+
+<p>should print either “Program type checked successfully” or “Type error”. Note,
+your program must take input from standard input and write to standard output
+(so that we can use redirection).</p>
+
+<p>Note: Please do not alter the directory structure of <code class="language-plaintext highlighter-rouge">RollN0_P1</code>. Only edit <code class="language-plaintext highlighter-rouge">GJDepthFirst.java</code> and <code class="language-plaintext highlighter-rouge">P1.java</code></p>
+<h2 id="resources">Resources</h2>
+
+<p>The source files are on
+<a href="https://github.com/kayceesrk/cs3300_m22/tree/main/assignments/02_typechecker">Github</a>.</p>
+
+<p>Get the source by cloning the entire repo:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git clone https://github.com/kayceesrk/cs3300_m22
+</code></pre></div></div>
+
+<p>If you have already cloned the repo, you can get the latest updates by:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd </span>cs3300_m22 <span class="c"># go to the cloned repo</span>
+<span class="nv">$ </span>git pull
+</code></pre></div></div>
+
+<p>The MiniJava grammar specification is
+<a href="https://www.cse.iitm.ac.in/~krishna/cs3300/minijava-spec.html">here</a>.</p>
+
+<p>The type checking rules for MiniJava is
+<a href="/cs3300_m22/assets/miniJava-typesystem.pdf">here</a>.</p>
+
+<h2 id="submission">Submission</h2>
+
+<p>Rename the folder <code class="language-plaintext highlighter-rouge">RollN0_P1</code> with your roll number. For example, if your roll
+number is <code class="language-plaintext highlighter-rouge">cs99b999</code>, then the folder should be named <code class="language-plaintext highlighter-rouge">cs99b999_P1</code>. Remove all
+the <code class="language-plaintext highlighter-rouge">.class</code> files before submission. For example, you can do:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd </span>cs99b999_P1
+<span class="nv">$ </span>find <span class="nb">.</span> <span class="nt">-name</span> <span class="s2">"*.class"</span> | xargs <span class="nb">rm</span>
+</code></pre></div></div>
+
+<p>Then produce the compressed gzip archive as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tar </span>cvzf cs99b999_P1.tar.gz cs99b999_P1
+</code></pre></div></div>
+
+<p>Submit the <code class="language-plaintext highlighter-rouge">.tar.gz</code> file.</p>
+
+<p>Note: You should thoroughly test your code. Some sample mini java programs are provided for testing. Create positive and negative tests per feature and test your code before submission. Please ensure that there are no compilation errors. If there are compilation errors, that code will yield zero marks.</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+<!--     <h2 class="footer-heading">CS3300 Monsoon 2022</h2> -->
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li><strong>CS3300 Monsoon 2022</strong></li>
+			<li></li>
+          <li><a href="mailto:kcsrk@cse.iitm.ac.in">kcsrk@cse.iitm.ac.in</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+ 
+
+         <p class="text">
+Department of Computer Science and Engineering<br />
+SSB 401, Indian Institute of Technology, Madras<br />
+Chennai, India 600036<br />
+
+      </div>
+
+      <div class="footer-col  footer-col-3">
+       <ul class="social-media-list">
+     
+
+          
+  <li>
+    <a href="https://github.com/kayceesrk/cs3300_m22">
+      <i class="fab fa-github" style="color:gray"></i> kayceesrk/cs3300_m22
+    </a>
+  </li>
+
+
+          
+  <li>
+    <a href="https://twitter.com/kc_srk">
+      <i class="fab fa-twitter" style="color:gray"></i> kc_srk
+    </a>
+  </li>
+
+
+          
+
+          
+
+          
+  <li>
+    <a href="http://kcsrk.info">
+      <i class="fas fa-globe" style="color:gray"></i> kcsrk.info
+    </a>
+  </li>
+
+
+
+
+       
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+  </body>
+
+</html>
+<!-- d.s.m.s.050600.062508.030515.080516.030818 | "Baby, I'm Yours" -->

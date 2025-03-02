@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Quelea : A Haskell library for declarative programming over eventually consistent store (Cassandra).">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/Quelea/stylesheets/stylesheet.css">
+
+    <title>Quelea</title>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kayceesrk/Quelea">View on GitHub</a>
+
+          <h1 id="project_title"><a href="/Quelea/index.html">Quelea</a></h1>
+          <h2 id="project_tagline">A Haskell library for declarative programming over eventually consistent store (Cassandra).</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gowthamk/Quelea/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gowthamk/Quelea/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h2>Getting started with Quelea VM</h2>
+<!-- p class="meta">10 Feb 2015</p -->
+
+<div class="post">
+<h4 id="booting-the-vm">Booting the VM</h4>
+
+<p>The VM is packaged as a <code>.ova</code> file, which can be opened either with VirtualBox
+(<a href="http://www.virtualbox.org/manual/ch01.html#ovf">instructions</a>) or VMWare
+player
+(<a href="https://pubs.vmware.com/fusion-5/topic/com.vmware.fusion.help.doc/GUID-275EF202-CF74-43BF-A9E9-351488E16030.html">instructions</a>).
+We suggest that you allocate atleast 2GB of memory, and atleast 2 processors to
+the VM. The username and password for the VM is <code>quelea</code>.</p>
+
+<h4 id="starting-cassandra">Starting Cassandra</h4>
+
+<p>Quelea uses Cassandra as its data store. VM comes with Cassandra installed. The
+first thing to do after successfully booting the VM is to start the cassandra
+service:</p>
+
+<ul>
+  <li>Open a terminal (Press right <em>command</em> or <em>windows</em> key, and type
+<em>terminal</em>).</li>
+  <li>Run <code>sudo ~/dsc-cassandra-2.0.12/bin/cassandra -f &gt; /dev/null</code></li>
+</ul>
+
+<p>Cassandra service should now run in the foreground, listening on port
+9160 for new connections. We can verify this by opening a Cassandra
+Query Languagae (CQL) shell:</p>
+
+<p><img src="/Quelea/assets/cqlsh.png" alt="cqlsh" /></p>
+
+<h4 id="getting-familiar-with-quelea-source-repository">Getting familiar with Quelea source repository</h4>
+
+<p>VM maintains a local git repository of Quelea at <code>~/git/quelea</code>. The
+sub-directory <code>src</code> contains Quelea’s Haskell source files, along with
+a cabal build file named <code>Codeec.cabal</code>. The cabal package of Quelea
+is called Codeec (for historic reasons), and is already installed in
+the VM. However, it is advisable to do a <code>git pull origin master</code>, and
+install the latest version of Codeec by running a <code>cabal install</code>
+under the <code>src</code> directory.</p>
+
+<p>Tests (benchmarks) are located in the sub-directory called <code>tests</code>:</p>
+
+<p><img src="/Quelea/assets/queleadirs.png" alt="queleadirs" /></p>
+
+<p>A short description of benchmarks has been provided on p.9 of our
+<a href="http://gowthamk.github.io/docs/quelea.pdf">draft paper</a></p>
+
+<h3 id="building-and-running-benchmarks">Building and running benchmarks</h3>
+
+<p>Contract classification is a static component of Quelea; classification of
+operation contracts (as <code>Strongly Consistent</code>, <code>Causally Consistent</code> etc.), and
+transaction contracts (as <code>Read Committed</code>, <code>Monotonic Atomic View</code> etc.)
+happens when a Quelea application is <u>compiled</u>. In order to evaluate the
+performance of contract classification, it is therefore imperative to build the
+benchmarks and observe the output. Performance of the run-time component can
+then be evaluated by running the binaries generated.</p>
+
+<p>For each benchmark, instructions on how to build and execute, and guidelines on
+how to interpret the data generated are provided in the following pages:</p>
+
+<ul>
+  <li><a href="/Quelea/bank-account-test.html">BankAccount</a> benchmark</li>
+  <li><a href="/Quelea/lww-txn-test.html">LWW Transactions</a> benchmark</li>
+  <li><a href="/Quelea/rubis-test.html">RUBiS</a> benchmark</li>
+  <li><a href="/Quelea/lww-gc-test.html">LWW GC</a> benchmark</li>
+</ul>
+
+<h3 id="running-experiments-in-cloud">Running experiments in cloud</h3>
+
+<p>Please note that the experimental results reported in the paper were conducted
+on a 5 node Quelea cluster, where each node was a c3.4xlarge machine with 16
+vCPUs and 30GiB of main memory. As a result, the scale of the results are much
+smaller in the VM. Nevertheless, you should be able to observe similar patterns
+as reported in the paper, at a smaller scale in the VM. If you are interested
+in reconstructing experiments in a cloud setting, instructions are
+<a href="/Quelea/ec2-instructions.html">here</a>.</p>
+
+<h3 id="troubleshooting">Troubleshooting</h3>
+
+<p>We have tried to ensure that benchmarks can be run as smoothly as possible.
+However, you might still encounter some issues due to some concurrency bugs
+lurking in our software. We have documented some of the known issues, and quick
+fixes <a href="/Quelea/troubleshooting.html">here</a>.</p>
+
+</div>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript">
+MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    });
+</script>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Quelea maintained by <a
+        href="https://github.com/kayceesrk">KC Sivaramakrishnan</a>
+        and <a
+        href="https://github.com/gowthamk">Gowtham Kaki</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>
