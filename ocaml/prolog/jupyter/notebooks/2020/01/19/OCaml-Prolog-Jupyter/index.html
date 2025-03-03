@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Teaching OCaml and Prolog through Jupyter Notebooks &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Teaching OCaml and Prolog through Jupyter Notebooks</h1>
+  <span class="post-date">19 Jan 2020</span>
+  <p>Last semester at IIT Madras, I taught a revamped core course <a href="http://kcsrk.info/cs3100_f19/">CS3100 Paradigms
+of Programming</a>, which introduces 3rd-year
+students to functional and logic programming paradigms. While the course had
+been traditionally offered in Lisp and Prolog, I introduced OCaml instead of
+Lisp. All of the lectures were delivered through interactive Jupyter
+notebooks. The assignments were also distributed as Jupyter notebooks and
+evaluated through autograder facility in Jupyter. There has since been several
+requests to replicate this setup elsewhere. Hence, I thought I should write
+about the set up and experience of teaching through Jupyter notebooks.</p>
+
+<!--more-->
+
+<h2 id="course-content">Course Content</h2>
+
+<p>Having never taken a functional programming course, there was the question of
+what I wanted the students to take away from the course. I wanted the course to
+be a mixture of functional programming concepts (types and lambda calculus) as
+well as advanced yet pragmatic concepts that one would find in modern functional
+programming languages (such as GADTs and Monads). The OCaml part of the course
+is based on the excellent <a href="https://www.cs.cornell.edu/courses/cs3110/2019sp/">CS3110 from
+Cornell</a> and <a href="https://www.cl.cam.ac.uk/teaching/1718/L28/">AFP from
+Cambridge Computer Laboratory</a>. In
+particular, I would highly recommend the <a href="https://www.cs.cornell.edu/courses/cs3110/2019sp/textbook/intro/3110.html">CS3110
+book</a>
+for anyone taking first steps into functional programming. Lambda calculus
+lectures were based on Peter Selinger’s <a href="https://arxiv.org/abs/0804.3434">lecture notes on lambda
+calculus</a>.</p>
+
+<p>The Prolog part of the course were modelled on <a href="https://www.cl.cam.ac.uk/teaching/1819/Prolog/">Prolog lectures from Cambridge
+Computer Laboratory</a> and the
+wonderful <a href="https://mitpress.mit.edu/books/art-prolog-second-edition">The Art of
+Prolog</a> book.</p>
+
+<p>Teaching functional and logic programming in the same course allowed me to
+develop interesting content that intersected both of the paradigms. In the
+functional programming part of the lecture, I had introduced <a href="http://kcsrk.info/cs3100_f19/lectures/lec11/lec11.pdf">simply typed
+lambda calculus</a>. In the
+logic part of the course, we developed a type checker for simply typed lambda
+calculus in Prolog. Merely encoding type checking rules for simply typed lambda
+calculus in Prolog, <a href="http://kcsrk.info/cs3100_f19/lectures/lec25/lec25.pdf">type inference with polymorphic types falls
+out</a>. With a tiny bit of
+coaxing, Prolog synthesizes programs for the given type. In the last assignment,
+the students were asked to implement <a href="https://github.com/kayceesrk/cs3100_f19/blob/gh-pages/assignments/assignment6.ipynb">a Prolog interpreter in
+OCaml</a>.
+There was indeed some value in teaching multiple paradigms in the same course,
+not just for a comparative study of strengths and weaknesses, but to be able to
+teach the students to pick the right tool for the job.</p>
+
+<h2 id="course-delivery">Course Delivery</h2>
+
+<p>I had a clear idea that the course will have to be interactive where programs
+are developed during the lectures. There was the option of using pdf slides and
+switching to <a href="https://opam.ocaml.org/packages/utop/">utop</a> for interactive
+development. But this solution lacked the uniformity that the students would
+like when reviewing the course materials. Moreover, switching between two
+mediums made it difficult for me to plan the lectures and was a distraction for
+the students.</p>
+
+<h3 id="jupyter-notebooks">Jupyter Notebooks</h3>
+
+<p>Hence, I decided to use Jupyter Notebooks for the course. Jupyter is a
+collection of open source standards and software for interactive development.
+Jupyter supports a variety of languages. For OCaml, I used
+<a href="https://github.com/akabe/ocaml-jupyter">akabe/ocaml-jupyter</a>, an OCaml kernel
+for Jupyter notebooks. This uses <code class="language-plaintext highlighter-rouge">utop</code>, an advanced OCaml top-level in the
+backend and hence provides excellent interactive top-level support. The
+situation for Prolog was not so great. Eventually, I zeroed in on
+<a href="https://github.com/targodan/jupyter-swi-prolog">targodan/jupyter-swi-prolog</a>
+but ended up improving the solution a bit
+<a href="https://github.com/kayceesrk/jupyter-swi-prolog">kayceesrk/jupyter-swi-prolog</a>
+(TODO KC: upstream fixes). Jupyter supports <a href="https://www.mathjax.org/">mathjax</a>,
+which allows typesetting LaTeX in the notebooks. This was great for writing the
+lectures on lambda calculus.</p>
+
+<h3 id="rise-for-slideshow">RISE for slideshow</h3>
+
+<p>Jupyter notebooks are webpages that mixes text and code. For lectures, I much
+prefer slides since they let you focus on a particular images, statement or an
+inference rule. While Jupyter allows the conversion of notebooks to slides
+<em>out-of-band</em>, <a href="https://github.com/damianavila/RISE">RISE</a> is an Jupyter
+notebook extension that lets turn your Jupyter notebook into a slideshow. Adding
+RISE to the setup makes the Jupyter experience compatible with traditional
+slides based lectures.</p>
+
+<h2 id="course-distribution">Course Distribution</h2>
+
+<p>Apart from delivering the lectures through the notebooks, I also wanted the
+students to be able to go through the notebooks and be able to run the snippets.
+Installing all the required software (OPAM, OCaml, Prolog, Jupyter and its
+extensions, Jupyter Kernels for OCaml and Prolog) and correctly was not
+something I wanted the students to go through. I wasn’t even sure if this
+software combination works on various Mac, Windows and Linux distributions.
+Hence, everything was packaged as a <a href="https://github.com/kayceesrk/cs3100_f19/blob/gh-pages/_docker/dockerfile">Docker
+file</a>,
+and the latest version of the image uploaded to <a href="https://hub.docker.com/r/kayceesrk/cs3100_iitm">docker
+hub</a>. In order to review the
+course, the students only had to install Docker and Git and run <a href="https://github.com/kayceesrk/cs3100_f19#running-the-jupyter-notebooks">exactly 4
+commands</a>.</p>
+
+<p>Docker is generally supported on all major OSes. Packaging up the course content
+as a docker image and pushing it to dockerhub is insurance against the software
+combination not working in the next offering of the course; if for some reason
+one of the dependency does not work next year, I can always fallback to the
+docker image while I find a fix. One of my TAs ran a tutorial on basic Docker
+and Git in the first week of the course to ensure that everyone was setup. I
+would consider Docker and Git as essential tools for modern software development
+as well as research. After that, the students did not ever have to do anything
+on the command line.</p>
+
+<h2 id="assignments">Assignments</h2>
+
+<p><a href="https://nbgrader.readthedocs.io/en/stable/">nbgrader</a> is a tool that
+facilitates creating and grading assignments in Jupyter notebook. It uses
+language-agnostic logic to identify failing cells, which meant that it was easy
+to set up nbgrader for OCaml and Prolog. The assignments were
+<a href="http://kcsrk.info/cs3100_f19/assignments/">released</a> as Jupyter notebooks,
+which the students filled in and submitted. nbgrader has support for unit tests
+which allowed the students to get instant feedback as they were developing the
+solutions.</p>
+
+<h2 id="wish-list">Wish List</h2>
+
+<p>Overall, the students felt that the Jupyter notebooks were better than
+slidedecks. However, not everything was perfect with the Jupyter notebook based
+lecturing. Here are some of the things that could be improved.</p>
+
+<ul>
+  <li>There is no good diagramming + animation support for Jupyter notebooks. The
+best I could find was <a href="https://github.com/kayceesrk/egal">egal</a> whose user
+interface I did not find intuitive. Even for simple diagrams, it was much more
+effort making diagrams there compared to Keynote, PowerPoint or OmniGraffle.
+Eventually, I used <a href="https://www.draw.io/">draw.io</a> to make the diagrams and
+include the images in the slides for a few of the cases where I actually
+needed to make diagrams.</li>
+  <li>Docker for Windows does not work on Windows Home or Student. Support for OPAM
+on Windows is slowly improving, but it is not yet for novices. Hence, I had to
+recommend the students to run an Ubuntu VM on their Windows machines in which
+they ran the course’s docker container.</li>
+  <li>nbgrader had several bugs which caused the autograder to award marks even for
+failing cells. The TAs had to go through a few of the assignments manually to
+ensure that students were awarded grades correctly. This is something that
+should be fixable easily.</li>
+  <li>RISE doesn’t easily let you change the size of the font. One has to edit the
+CSS to change the font size. And the default style wastes too much space. This
+meant that not much content can be fit into a single slide. Hence, I’ve had to
+artificially split content into multiple slides or zoom out several steps to
+show content that was cut off on the bottom.</li>
+  <li>The support for Prolog is not so great. There are a few advanced features in
+Prolog for which the Prolog setup
+<a href="https://github.com/yuce/pyswip/issues/68">fails</a>. I had to switch to
+SWI-Prolog top-level for a few lectures. That said, the Prolog support is
+mostly there and the issues can be fixed with some effort.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I have started working on fixing some of these issues and upstreaming the
+solutions. Hopefully the fixes should be ready for the next iteration of the
+course. If you would like to replicate this setup for your course, do feel free
+to utilise the course materials.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/offcputime/bpfcc/2024/07/24/offcputime-analysis/">
+            Off-CPU-time analysis
+            <small>24 Jul 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/gdb/2024/01/20/gdb-ocaml/">
+            Getting Started with GDB on OCaml
+            <small>20 Jan 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/multicore/job/2019/09/16/1115-multicore-job/">
+            Multicore OCaml Jobs
+            <small>16 Sep 2019</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+<hr>
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+</a>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">kcsrk dot info</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="http://kcsrk.info" property="cc:attributionName" rel="cc:attributionURL">KC Sivaramakrishnan</a>
+is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

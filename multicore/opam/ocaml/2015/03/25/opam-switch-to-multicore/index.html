@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Opam Switch to Multicore OCaml &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Opam Switch to Multicore OCaml</h1>
+  <span class="post-date">25 Mar 2015</span>
+  <p>OPAM has a great <a href="https://opam.ocaml.org/doc/Usage.html#opamswitch">compiler
+switch</a> feature that lets you
+simultaneously host several OCaml installations, each with its own compiler
+version and a set of installed packages. I wanted to use the power of <code class="language-plaintext highlighter-rouge">opam
+switch</code> for working with the experimental <a href="https://github.com/ocamllabs/ocaml-multicore">multicore
+OCaml</a> compiler. The key
+advantage of doing this is that it lets you easily install packages from the
+<a href="http://opam.ocaml.org/">OPAM repository</a>, while sandboxing it from other OCaml
+installations on your system. The post will show how to create OPAM compiler
+switch for multicore OCaml.</p>
+
+<!--more-->
+
+<h2 id="install-opam-compiler-conf">Install opam-compiler-conf</h2>
+
+<p>The first step is to install Gabriel Scherer’s <a href="https://github.com/gasche/opam-compiler-conf">opam-compiler-conf
+script</a> which lets you do opam
+switches on local installations:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>git clone https://github.com/gasche/opam-compiler-conf
+<span class="nv">$ </span><span class="nb">cd </span>opam-compiler-conf
+<span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.local/bin
+<span class="nv">$ </span>make <span class="nv">BINDIR</span><span class="o">=</span>~/.local/bin <span class="nb">install</span></code></pre></figure>
+
+<p>This installs the <code class="language-plaintext highlighter-rouge">opam-compiler-conf</code> script under <code class="language-plaintext highlighter-rouge">~/.local/bin</code>. Make sure
+this directory is under your search path. Now, <code class="language-plaintext highlighter-rouge">$opam compiler-conf</code> should
+give you the list of available commands.</p>
+
+<h2 id="build-multicore-ocaml-locally">Build multicore OCaml locally</h2>
+
+<p>Typing <code class="language-plaintext highlighter-rouge">opam switch</code> should list the compilers currently installed in your
+system and those that are available. For instance, here is my setup:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>opam switch
+system  C system  System compiler <span class="o">(</span>4.02.1<span class="o">)</span>
+4.02.1  I 4.02.1  Official 4.02.1 release
+4.02.0  I 4.02.0  Official 4.02.0 release
+4.01.0  I 4.01.0  Official 4.01.0 release
+<span class="nt">--</span>     <span class="nt">--</span> 3.11.2  Official 3.11.2 release
+<span class="nt">--</span>     <span class="nt">--</span> 3.12.1  Official 3.12.1 release
+<span class="nt">--</span>     <span class="nt">--</span> 4.00.0  Official 4.00.0 release
+<span class="nt">--</span>     <span class="nt">--</span> 4.00.1  Official 4.00.1 release
+<span class="c"># 66 more patched or experimental compilers, use '--all' to show</span></code></pre></figure>
+
+<p>You can easily switch between the installations using <code class="language-plaintext highlighter-rouge">opam switch
+[system-name]</code>. Let us now install multicore OCaml as a new switch:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>git clone https://github.com/ocamllabs/ocaml-multicore
+<span class="nv">$ </span><span class="nb">cd </span>ocaml-multicore
+<span class="nv">$ </span>opam compiler-conf configure
+<span class="nv">$ </span>make world
+<span class="nv">$ </span>opam compiler-conf <span class="nb">install</span>
+<span class="nv">$ </span><span class="nb">eval</span> <span class="sb">`</span>opam config <span class="nb">env</span><span class="sb">`</span></code></pre></figure>
+
+<p>The multicore compiler is now installed and has been made the current compiler:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>opam switch
+system                      I system                      System compiler <span class="o">(</span>4.02.1<span class="o">)</span>
+4.02.1+local-git-multicore  C 4.02.1+local-git-multicore  Local checkout of 4.02.1 at /Users/kc/ocaml-multicore
+4.02.1                      I 4.02.1                      Official 4.02.1 release
+4.02.0                      I 4.02.0                      Official 4.02.0 release
+4.01.0                      I 4.01.0                      Official 4.01.0 release
+<span class="nt">--</span>                         <span class="nt">--</span> 3.11.2                      Official 3.11.2 release
+<span class="nt">--</span>                         <span class="nt">--</span> 3.12.1                      Official 3.12.1 release
+<span class="nt">--</span>                         <span class="nt">--</span> 4.00.0                      Official 4.00.0 release
+<span class="nt">--</span>                         <span class="nt">--</span> 4.00.1                      Official 4.00.1 release
+<span class="c"># 66 more patched or experimental compilers, use '--all' to show</span></code></pre></figure>
+
+<p>This can be confirmed by:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>ocamlc <span class="nt">-version</span>
+4.02.1+multicore-dev0</code></pre></figure>
+
+<p>which shows the current OCaml bytecode compiler version.</p>
+
+<h2 id="working-with-the-local-switch">Working with the local switch</h2>
+
+<p>Every time you change the compiler source, you need to rebuild the compiler and
+reinstall the switch:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Changed compiler source...</span>
+<span class="nv">$ </span>make world
+<span class="nv">$ </span>opam compiler-conf reinstall</code></pre></figure>
+
+<p>The local installation can be removed by <code class="language-plaintext highlighter-rouge">opam compiler-conf uninstall</code>.</p>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/offcputime/bpfcc/2024/07/24/offcputime-analysis/">
+            Off-CPU-time analysis
+            <small>24 Jul 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/gdb/2024/01/20/gdb-ocaml/">
+            Getting Started with GDB on OCaml
+            <small>20 Jan 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/prolog/jupyter/notebooks/2020/01/19/OCaml-Prolog-Jupyter/">
+            Teaching OCaml and Prolog through Jupyter Notebooks
+            <small>19 Jan 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+<hr>
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+</a>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">kcsrk dot info</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="http://kcsrk.info" property="cc:attributionName" rel="cc:attributionURL">KC Sivaramakrishnan</a>
+is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

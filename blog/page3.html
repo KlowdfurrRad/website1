@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Blog &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="page">
+  <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/multicore/2015/05/20/effects-multicore/">
+        Effective Concurrency with Algebraic Effects
+      </a>
+    </h1>
+
+    <span class="post-date">20 May 2015</span>
+		<p>Algebraic effects and handlers provide a modular abstraction for expressing
+effectful computation, allowing the programmer to separate the expression of an
+effectful computation from its implementation. In this post, I will present an
+extension to OCaml for programming with linear algebraic effects, and
+demonstrate its use in expressing concurrency primitives for <a href="https://github.com/ocamllabs/ocaml-multicore">multicore
+OCaml</a>. The design and
+implementation of algebraic effects for multicore OCaml is due to <a href="http://www.lpw25.net/">Leo
+White</a>, <a href="https://github.com/stedolan">Stephen Dolan</a> and
+the multicore team at <a href="http://www.cl.cam.ac.uk/projects/ocamllabs/">OCaml
+Labs</a>.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/multicore/opam/ocaml/2015/03/25/opam-switch-to-multicore/">
+        Opam Switch to Multicore OCaml
+      </a>
+    </h1>
+
+    <span class="post-date">25 Mar 2015</span>
+		<p>OPAM has a great <a href="https://opam.ocaml.org/doc/Usage.html#opamswitch">compiler
+switch</a> feature that lets you
+simultaneously host several OCaml installations, each with its own compiler
+version and a set of installed packages. I wanted to use the power of <code class="language-plaintext highlighter-rouge">opam
+switch</code> for working with the experimental <a href="https://github.com/ocamllabs/ocaml-multicore">multicore
+OCaml</a> compiler. The key
+advantage of doing this is that it lets you easily install packages from the
+<a href="http://opam.ocaml.org/">OPAM repository</a>, while sandboxing it from other OCaml
+installations on your system. The post will show how to create OPAM compiler
+switch for multicore OCaml.</p>
+
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <span class="pagination-item older">Older</span>
+  
+  
+    
+      <a class="pagination-item newer" href="https://kcsrk.info/blog/page2">Newer</a>
+    
+  
+</div>
+
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

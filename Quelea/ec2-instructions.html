@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Quelea : A Haskell library for declarative programming over eventually consistent store (Cassandra).">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/Quelea/stylesheets/stylesheet.css">
+
+    <title>Quelea</title>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kayceesrk/Quelea">View on GitHub</a>
+
+          <h1 id="project_title"><a href="/Quelea/index.html">Quelea</a></h1>
+          <h2 id="project_tagline">A Haskell library for declarative programming over eventually consistent store (Cassandra).</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gowthamk/Quelea/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gowthamk/Quelea/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h2>Instructions to run experiments on EC2</h2>
+<!-- p class="meta">12 Feb 2015</p -->
+
+<div class="post">
+<p>In this setup, we will create a 2 node Quelea cluster with a single client node
+to run the experiments. </p>
+
+<h3 id="part-1-booting-up-the-instances">Part 1: Booting up the instances</h3>
+
+<ul>
+  <li>Log into Amazon EC2 console: <a href="http://aws.amazon.com/ec2/">http://aws.amazon.com/ec2/</a></li>
+  <li>Change the region to US West (Oregon):</li>
+</ul>
+
+<p><img src="/Quelea/assets/ec2-1.png" alt="ec2-1" /></p>
+
+<ul>
+  <li>Click on EC2 Console (the first option in the top left of the control panel).</li>
+  <li>Lets launch the instances now. Click on Launch instance:</li>
+</ul>
+
+<p><img src="/Quelea/assets/ec2-2.png" alt="ec2-2" /></p>
+
+<ul>
+  <li>Click on “Community AMI”, and search for “ami-f7c79cc7”. You should see an AMI named quelea_pldi15_050220151653. Select this AMI.</li>
+</ul>
+
+<p><img src="/Quelea/assets/ec2-3.png" alt="ec2-3" /></p>
+
+<ul>
+  <li>Choose any instance type. The free-tier eligible instance will not have sufficient memory to compile the programs. For this set up, choose m3.large instance. Be warned that this costs $0.14 an hour at the time of writing. Click “Next: Configure instance details.”</li>
+  <li>Enter 3 for the number of instances. 2 for the server and 1 for the client. Click “Next: Add storage”. -&gt; “Next: Tag Instance” -&gt; “Next: Configure Security Group”.</li>
+  <li>Ensure “Create new security group” is selected. And for Type, choose “All TCP” from the drop down menu. </li>
+</ul>
+
+<p><img src="/Quelea/assets/ec2-4.png" alt="ec2-4" /></p>
+
+<ul>
+  <li>Click “Launch”.</li>
+  <li>If you don’t already have a key pair, create a new key pair, and download it to a secure location (say, your <code>~/.ssh</code> directory). Change the permissions of the pem file to “400”. Finally, launch Instances. Click “View Instances” to get back to the console and wait for the instances to boot and initialise.</li>
+</ul>
+
+<h3 id="part-2-setting-up-the-cluster">Part 2: Setting up the cluster</h3>
+
+<ul>
+  <li>
+    <p>Open three terminals, and log into all three instances using their public IPs
+(listed on EC2 dashboard, against the instance id), and your pem file. For
+example, if your pem file is saved as <code>~/.ssh/name-key-pair-uswestoregon.pem</code>,
+to log on to an instance wiht public IP of <code>54.149.150.102</code>, you should the
+following:</p>
+
+    <pre><code>ssh -i ~/.ssh/name-key-pair-uswestoregon.pem ubuntu@54.149.150.102
+</code></pre>
+  </li>
+</ul>
+
+<p><img src="/Quelea/assets/ec2-5.png" alt="ec2-5" /></p>
+
+<ul>
+  <li>
+    <p>On every instance, run:</p>
+
+    <pre><code>cd ~Quelea/src
+git pull origin master
+cabal install
+</code></pre>
+
+    <p>To build and install latest sources.</p>
+  </li>
+  <li>Of the three instances (say A, B &amp; C) pick two to be servers (say A &amp; B). </li>
+  <li>Get the private IP of machine A. Type “hostname” on A. If the output is “ip-10-36-2-14”, then the private ip is “10.36.2.14”.</li>
+  <li>
+    <p>On A and B:</p>
+
+    <pre><code> cd ~/Quelea/Ec2Files
+ sudo sh ec2snitch_init.sh &lt;private_ip_of_A&gt;
+</code></pre>
+
+    <p>This sets up the cassandra configuration files appropriately. Please note that
+you should use the private IP of A on <strong>both</strong> A and B.</p>
+  </li>
+  <li>
+    <p>On A and B:</p>
+
+    <pre><code>  cd ~/dsc-cassandra-2.0.12
+  sudo ./bin/cassandra -f
+</code></pre>
+
+    <p>You should see that the cassandra replicas have seen each other. There should be something along the lines of</p>
+
+    <pre><code>INFO 15:08:07,492 Handshaking version with /10.41.30.134
+INFO 15:08:09,090 Node /10.41.30.134 is now part of the cluster
+INFO 15:08:09,097 Handshaking version with /10.41.30.134
+INFO 15:08:09,104 InetAddress /10.41.30.134 is now UP
+</code></pre>
+  </li>
+</ul>
+
+<p>indicating that the hand-shaking is complete.</p>
+
+<ul>
+  <li>
+    <p>Ctrl-C the both cassandra instances to kill them. Restart them with their outputs redirected to /dev/null. It might be good to start a screen or a tmux session on the instances since we will be needing multiple terminal windows.</p>
+
+    <pre><code>sudo ./bin/cassandra -f &gt; /dev/null
+</code></pre>
+  </li>
+  <li>
+    <p>On A, open a new terminal window. Type <code>~/dsc-cassandra-2.0.12/bin/cqlsh</code>
+to start the cassandra command line client. Then, create a new keyspace with
+the following command: </p>
+
+    <pre><code>create keyspace Codeec with replication = { 'class' : 'NetworkTopologyStrategy', 'us-west-2' : 2 };
+quit
+</code></pre>
+
+    <p>Here ‘us-west-2’ is the name of the datacenter and the argument ‘2’ is the replication factor. Since we use a fully replicated cluster for Quelea, this is equal to the number of server replicas.</p>
+  </li>
+</ul>
+
+<h3 id="part-3-running-bankaccountq">Part 3: Running BankAccount_Q</h3>
+
+<p>Lets run the <code>BankAccount_Q</code> benchmark. The instructions for other benchmarks
+are the same. At this point, the 2 node cassandra cluster on A and B are
+running.</p>
+
+<ul>
+  <li>
+    <p>On all 3 instances, </p>
+
+    <pre><code>cd ~/Quelea/tests/BankAccount
+make BROKER=-DLBB BankAccount_Q
+</code></pre>
+
+    <p>The “BROKER=-DLBB” is required so that LoadBalancingBroker is used in a multi-replica deployment.</p>
+  </li>
+  <li>
+    <p>On A:</p>
+
+    <pre><code> ./BankAccount_Q --kind Create --brokerAddr &lt;private_ip_of_A&gt;
+ ./BankAccount_Q --kind Broker --brokerAddr &lt;private_ip_of_A&gt;
+</code></pre>
+
+    <p>to start the broker.</p>
+  </li>
+  <li>
+    <p>Open a new terminal window on A.</p>
+
+    <pre><code> ./BankAccount_Q --kind Server --rtsArgs “-N2” --brokerAddr &lt;private_ip_of_A&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>On B:</p>
+
+    <pre><code> ./BankAccount_Q --kind Server --rtsArgs “-N2” --brokerAddr &lt;private_ip_of_A&gt;
+</code></pre>
+  </li>
+  <li>
+    <p>On C:
+      ./BankAccount_Q –kind Client –rtsArgs “-N2” –numThreads 16 –brokerAddr <private_ip_of_a></private_ip_of_a></p>
+  </li>
+</ul>
+
+<p>You should see the results of the run as usual.</p>
+
+<ul>
+  <li>
+    <p>Finally, kill all the processes including the broker and the server. Delete the tables create invoking the following command on A.</p>
+
+    <pre><code> ./BankAccount_Q --kind Drop
+</code></pre>
+  </li>
+</ul>
+
+<p>The instructions for running other experiments are similar.</p>
+
+<h3 id="expanding-the-cluster">Expanding the cluster</h3>
+
+<p>More server nodes can be added to the cluster by following the same instructions as above. The only change is that the keyspace creation. For a 5, node cluster, the command would be</p>
+
+<pre><code> create keyspace Codeec with replication = { 'class' : 'NetworkTopologyStrategy', 'us-west-2' : 5 };
+</code></pre>
+
+</div>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript">
+MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    });
+</script>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Quelea maintained by <a
+        href="https://github.com/kayceesrk">KC Sivaramakrishnan</a>
+        and <a
+        href="https://github.com/gowthamk">Gowtham Kaki</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Quelea : A Haskell library for declarative programming over eventually consistent store (Cassandra).">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/Quelea/stylesheets/stylesheet.css">
+
+    <title>Quelea</title>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kayceesrk/Quelea">View on GitHub</a>
+
+          <h1 id="project_title"><a href="/Quelea/index.html">Quelea</a></h1>
+          <h2 id="project_tagline">A Haskell library for declarative programming over eventually consistent store (Cassandra).</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gowthamk/Quelea/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gowthamk/Quelea/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h2>LWW Register Transactions Benchmark</h2>
+<!-- p class="meta">11 Feb 2015</p -->
+
+<div class="post">
+<p>The aim of this benchmark to compare the performance of various
+ANSI transaction isolation levels implemented in Quelea (Namely, <em>Read
+Committed (RC)</em>, <em>Monotonic Atomic View (MAV)</em>, and <em>Repeatable Read
+(RR)</em>). For this purpose, we use a register data type with
+least-writer-wins semantics for writes. We compose transactions with
+10 operations - 5 <em>EC</em> writes and 5 <em>EC</em> reads, execute them under
+different isolation levels in different experiments (one experiment
+per isolation level).</p>
+
+<h3 id="building-the-benchmark">Building the benchmark</h3>
+
+<p>Since the isolation level of transactions in an experiment is fixed,
+and all transactions are composed of <em>EC</em> reads and writes, contract
+classification does nothing interesting in this benchmark. It is
+therefore not necessary to build this benchmark; existing binaries can
+be used. Nevertheless, if you want to build, navigate to
+<code>~/git/quelea/tests/LWW</code>, and run <code>make LWW_txn</code>. Successful build
+generates one binary - <code>LWW_txn</code>.</p>
+
+<h3 id="running-the-benchmark">Running the Benchmark</h3>
+
+<p>First, we run a basic experiment to measure latency and throughput,
+when a single client sends 1000 successive transation requests (with
+an inter-request delay of 1ms (1000 μs)). We take the measurements for
+each of the <em>NoTxn</em>, <em>RC</em>, <em>MAV</em>, and <em>RR</em> cases. The commands to
+execute, and output generated in our sample runs are shown below.  As
+with the <a href="/Quelea/bank-account-test.html">BankAccount benchmark</a>, 
+experiments can be terminated either manually (via <code>CTRL+C</code>), or by
+setting a hard time limit via <code>--terminateAfter</code> option, which accepts
+number of seconds as argument.</p>
+
+<h4 id="notxn">NoTxn</h4>
+
+<pre><code>./LWW_txn --kind Daemon --numRounds 1000 --numThreads 1 --delayReq 1000 --measureLatency --txnKind NoTxn
+</code></pre>
+
+<p><img src="/Quelea/assets/lww-txn-notxn1.png" alt="lww-txn-notxn1" /></p>
+
+<p>Once you have aggregate latency and throughput data, terminate the
+experiment by pressing <code>CTRL-C</code>. If you have encountered an error, or
+if you suspect that execution is not making progress, please refer to
+the <a href="/Quelea/troubleshooting.html">troubleshooting guide</a>
+for quick fix.</p>
+
+<h4 id="rc">RC</h4>
+
+<pre><code>./LWW_txn --kind Daemon --numRounds 1000 --numThreads 1 --delayReq 1000 --measureLatency --txnKind RC
+</code></pre>
+
+<p><img src="/Quelea/assets/lww-txn-rc1.png" alt="lww-txn-rc1" /></p>
+
+<h4 id="mav">MAV</h4>
+
+<pre><code>./LWW_txn --kind Daemon --numRounds 1000 --numThreads 1 --delayReq 1000 --measureLatency --txnKind MAV
+</code></pre>
+
+<p><img src="/Quelea/assets/lww-txn-mav1.png" alt="lww-txn-mav1" /></p>
+
+<h4 id="rr">RR</h4>
+
+<pre><code>./LWW_txn --kind Daemon --numRounds 1000 --numThreads 1 --delayReq 1000 --measureLatency --txnKind RR
+</code></pre>
+
+<p><img src="/Quelea/assets/lww-txn-rr1.png" alt="lww-txn-rr1" /></p>
+
+<p>The experiment can now be repeated varying the number of client
+threads (<code>--numThreads</code>) from 2 to 4. Screenshots capturing
+measurements for sample runs when <code>--numThreads</code> is 4 are shown below:</p>
+
+<h5 id="notxn-1">NoTxn</h5>
+
+<p><img src="/Quelea/assets/lww-txn-notxn2.png" alt="lww-txn-notxn2" /></p>
+
+<h5 id="rc-1">RC</h5>
+
+<p><img src="/Quelea/assets/lww-txn-rc2.png" alt="lww-txn-rc2" /></p>
+
+<h5 id="mav-1">MAV</h5>
+
+<p><img src="/Quelea/assets/lww-txn-mav2.png" alt="lww-txn-mav2" /></p>
+
+<h5 id="rr-1">RR</h5>
+
+<p><img src="/Quelea/assets/lww-txn-rr2.png" alt="lww-txn-rr2" /></p>
+
+<h3 id="observations">Observations</h3>
+
+<p>As demonstrated in sample runs, experimental results should indicate
+that throughput depends on the strength of the isolation level of
+transactions:</p>
+
+<ul>
+  <li>Througput is highest when no transactional guarantees (including
+atomicity) are required. </li>
+  <li>Transactions requiring the weakest isolation level (<em>RC</em>) yeild
+highest throughput.</li>
+  <li>Transactions requiring strongest isolation level (<em>RR</em>) yeild
+lowest throughput.</li>
+</ul>
+
+
+</div>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript">
+MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    });
+</script>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Quelea maintained by <a
+        href="https://github.com/kayceesrk">KC Sivaramakrishnan</a>
+        and <a
+        href="https://github.com/gowthamk">Gowtham Kaki</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

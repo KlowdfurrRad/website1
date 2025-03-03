@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Lock-free programming for the masses &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Lock-free programming for the masses</h1>
+  <span class="post-date">11 Jun 2016</span>
+  <p>Efficient concurrent programming libraries are essential for taking advantage of
+fine-grained parallelism on multicore hardware. In this post, I will introduce
+<a href="https://github.com/ocamllabs/reagents"><em>reagents</em></a>, a composable, lock-free
+concurrency library for expressing fine-grained parallel programs on <a href="https://github.com/ocamllabs/ocaml-multicore/wiki">Multicore
+OCaml</a>. Reagents offer a
+high-level DSL for experts to specify efficient concurrency libraries, but also
+allows the consumers of the libraries to extend them further without knowing the
+details of the underlying implementation.</p>
+
+<!--_more-->
+
+<h2 id="motivation">Motivation</h2>
+
+<p>Designing and implementing scalable concurrency libraries is an enormous
+undertaking. Decades of research and industrial effort has led to
+state-of-the-art concurrency libraries such as
+<a href="https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.htm://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html">java.util.concurrent</a>
+(JUC) for the JVM and
+<a href="https://msdn.microsoft.com/en-us/library/dd460718(v=vs.110).aspx">System.Collections.Concurrent</a>
+(SCC) for the .NET framework. These libraries are often written by experts and
+have subtle invariants, which makes them hard to maintain and improve. Moreover,
+it is hard for the library user to safely combine multiple atomic operations.
+For example, while JUC and SCC provide atomic operations on stacks and queues,
+such atomic operations cannot be combined into larger atomic operations.</p>
+
+<p>On the other hand software transactional memory (STM) offers
+<a href="http://research.microsoft.com/pubs/67418/2005-ppopp-composable.pdf">composability</a>,
+but STM based data structures are generally less efficient than their lock-free
+counterparts, especially when there is moderate to high levels of contention.
+<a href="https://github.com/aturon">Aaron Turon</a> introduced
+<a href="https://www.mpi-sws.org/~turon/reagents.pdf">reagents</a>, an expressive and
+composable library which retains the performance and scalability of lock-free
+programming. Reagents allow isolated atomic updates to shared state, as well as
+message passing communication over channels. Furthermore, reagents provide a set
+of combinators for sequential composition à la STM, parallel composition
+à la <a href="https://en.wikipedia.org/wiki/Join-calculus">Join calculus</a>, and
+selective communication à la <a href="https://en.wikipedia.org/wiki/Concurrent_ML">Concurrent
+ML</a>, while being lock-free.
+Reagents occupy this sweet-spot between expressivity and performance, and we
+believe it could serve as a great default<sup id="fnref:lib" role="doc-noteref"><a href="#fn:lib" class="footnote" rel="footnote">1</a></sup> for writing fine-grained
+concurrent programs in Multicore OCaml.</p>
+
+<h2 id="combinators">Combinators</h2>
+
+<p>The basic reagents combinators are presented below.</p>
+
+<figure class="highlight"><pre><code class="language-ocaml" data-lang="ocaml"><span class="k">type</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span>
+
+<span class="c">(* channel communication *)</span>
+<span class="k">val</span> <span class="n">swap</span> <span class="o">:</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">endpoint</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span>
+
+<span class="c">(* shared memory *)</span>
+<span class="k">val</span> <span class="n">upd</span> <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">ref</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">b</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span> <span class="o">*</span> <span class="k">'</span><span class="n">c</span><span class="p">)</span> <span class="n">option</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">b</span><span class="o">,</span><span class="k">'</span><span class="n">c</span><span class="p">)</span> <span class="n">t</span>
+
+<span class="c">(* sequential composition *)</span>
+<span class="k">val</span> <span class="p">(</span><span class="o">&gt;&gt;&gt;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">b</span><span class="o">,</span><span class="k">'</span><span class="n">c</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">c</span><span class="p">)</span> <span class="n">t</span>
+<span class="c">(* conjunction *)</span>
+<span class="k">val</span> <span class="p">(</span><span class="o">&lt;*&gt;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">c</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span> <span class="o">*</span> <span class="k">'</span><span class="n">c</span><span class="p">)</span> <span class="n">t</span>
+<span class="c">(* disjunction *)</span>
+<span class="k">val</span> <span class="p">(</span><span class="o">&lt;+&gt;</span><span class="p">)</span> <span class="o">:</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span>
+
+<span class="k">val</span> <span class="n">run</span> <span class="o">:</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span><span class="k">'</span><span class="n">b</span><span class="p">)</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">b</span></code></pre></figure>
+
+<p>A reagent value with type <code class="language-plaintext highlighter-rouge">('a,'b) t</code> represents an atomic transaction that
+takes an input of type <code class="language-plaintext highlighter-rouge">'a</code> and returns a value of type <code class="language-plaintext highlighter-rouge">'b</code>. The basic atomic
+operations are exchanging message on an endpoint of a channel through <code class="language-plaintext highlighter-rouge">swap</code> and
+updating a shared reference through <code class="language-plaintext highlighter-rouge">upd</code>. The <code class="language-plaintext highlighter-rouge">swap</code> operation blocks the
+calling thread until a matching swap operation is available on the dual
+endpoint.</p>
+
+<p>The atomic reference update operation <code class="language-plaintext highlighter-rouge">upd</code>, takes a function which is applied
+to the current value of the reference (of type <code class="language-plaintext highlighter-rouge">'a</code>) and the input value (of
+type <code class="language-plaintext highlighter-rouge">'b</code>), and is expected to return an optional pair of the new value for the
+reference and a return value (of type <code class="language-plaintext highlighter-rouge">'c</code>). If the update function returns
+<code class="language-plaintext highlighter-rouge">None</code>, then the invoking thread blocks until the reference is updated. Reagent
+implementation takes care of the blocking and signalling necessary for thread
+wake up.</p>
+
+<p>The most important feature of reagents is that it allows composition of reagent
+transactions in sequence <code class="language-plaintext highlighter-rouge">&gt;&gt;&gt;</code> and in parallel <code class="language-plaintext highlighter-rouge">&lt;*&gt;</code>, and also to selectively
+choose one of the available operations <code class="language-plaintext highlighter-rouge">&lt;+&gt;</code>. Furthermore, these combinators
+being <a href="http://www.cse.chalmers.se/~rjmh/afp-arrows.pdf">arrows</a>, enable
+optimisations that cover the common case and help reagents achieve performance
+commensurate to hand-written implementations. Reagents library also exposes
+monadic combinators for convenience, at the cost of forgoing optimisation
+opportunities.</p>
+
+<h2 id="a-lock-free-stack">A lock-free stack</h2>
+
+<p>The following is a reagent implementation of the <a href="https://en.wikipedia.org/wiki/Treiber_Stack">Treiber lock-free
+stack</a>.</p>
+
+<figure class="highlight"><pre><code class="language-ocaml" data-lang="ocaml"><span class="k">module</span> <span class="nc">R</span> <span class="o">=</span> <span class="nc">Reagent</span>
+
+<span class="k">module</span> <span class="nc">TreiberStack</span> <span class="o">:</span> <span class="k">sig</span>
+  <span class="k">type</span> <span class="k">'</span><span class="n">a</span> <span class="n">t</span>
+  <span class="k">val</span> <span class="n">create</span>  <span class="o">:</span> <span class="kt">unit</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span> <span class="n">t</span>
+  <span class="k">val</span> <span class="n">push</span>    <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span><span class="o">,</span> <span class="kt">unit</span><span class="p">)</span> <span class="nn">R</span><span class="p">.</span><span class="n">t</span>
+  <span class="k">val</span> <span class="n">pop</span>     <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt">unit</span><span class="o">,</span> <span class="k">'</span><span class="n">a</span><span class="p">)</span> <span class="nn">R</span><span class="p">.</span><span class="n">t</span>
+  <span class="k">val</span> <span class="n">try_pop</span> <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">t</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="kt">unit</span><span class="o">,</span> <span class="k">'</span><span class="n">a</span> <span class="n">option</span><span class="p">)</span> <span class="nn">R</span><span class="p">.</span><span class="n">t</span>
+<span class="k">end</span> <span class="o">=</span> <span class="k">struct</span>
+  <span class="k">type</span> <span class="k">'</span><span class="n">a</span> <span class="n">t</span> <span class="o">=</span> <span class="k">'</span><span class="n">a</span> <span class="kt">list</span> <span class="nn">R</span><span class="p">.</span><span class="n">ref</span>
+
+  <span class="k">let</span> <span class="n">create</span> <span class="bp">()</span> <span class="o">=</span> <span class="nn">R</span><span class="p">.</span><span class="n">ref</span> <span class="bp">[]</span>
+
+  <span class="k">let</span> <span class="n">push</span> <span class="n">r</span> <span class="o">=</span>
+    <span class="nn">R</span><span class="p">.</span><span class="n">upd</span> <span class="n">r</span> <span class="p">(</span><span class="k">fun</span> <span class="n">xs</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="nc">Some</span> <span class="p">(</span><span class="n">x</span><span class="o">::</span><span class="n">xs</span><span class="o">,</span><span class="bp">()</span><span class="p">))</span>
+
+  <span class="k">let</span> <span class="n">try_pop</span> <span class="n">r</span> <span class="o">=</span> <span class="nn">R</span><span class="p">.</span><span class="n">upd</span> <span class="n">r</span> <span class="p">(</span><span class="k">fun</span> <span class="n">l</span> <span class="bp">()</span> <span class="o">-&gt;</span>
+    <span class="k">match</span> <span class="n">l</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="bp">[]</span> <span class="o">-&gt;</span> <span class="nc">Some</span> <span class="p">([]</span><span class="o">,</span> <span class="nc">None</span><span class="p">)</span>
+    <span class="o">|</span> <span class="n">x</span><span class="o">::</span><span class="n">xs</span> <span class="o">-&gt;</span> <span class="nc">Some</span> <span class="p">(</span><span class="n">xs</span><span class="o">,</span> <span class="nc">Some</span> <span class="n">x</span><span class="p">))</span>
+
+  <span class="k">let</span> <span class="n">pop</span> <span class="n">r</span> <span class="o">=</span> <span class="nn">Ref</span><span class="p">.</span><span class="n">upd</span> <span class="n">r</span> <span class="p">(</span><span class="k">fun</span> <span class="n">l</span> <span class="bp">()</span> <span class="o">-&gt;</span>
+    <span class="k">match</span> <span class="n">l</span> <span class="k">with</span>
+    <span class="o">|</span> <span class="bp">[]</span> <span class="o">-&gt;</span> <span class="nc">None</span>
+    <span class="o">|</span> <span class="n">x</span><span class="o">::</span><span class="n">xs</span> <span class="o">-&gt;</span> <span class="nc">Some</span> <span class="p">(</span><span class="n">xs</span><span class="o">,</span><span class="n">x</span><span class="p">))</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>We utilise a shared reference of type <code class="language-plaintext highlighter-rouge">'a list ref</code> to represent the stack and
+use the <code class="language-plaintext highlighter-rouge">upd</code> operation to perform atomic operations on the stack. The important
+take away from this snippet is that the code is no more complicated than a
+sequential stack implementation. The logic for backoff, retry, blocking and
+signalling are hidden behind the reagents implementation. In particular, the
+<code class="language-plaintext highlighter-rouge">pop</code> operation blocks the calling thread until the stack is non-empty. Thus,
+the experts can write efficient concurrency libraries using reagents while
+preserving readability (and as a consequence maintainability) of code.</p>
+
+<p>Furthermore, since the stack interface is exposed as reagents, the individual
+operations can be further composed. For example, given two Treiber stacks <code class="language-plaintext highlighter-rouge">s1</code>
+and <code class="language-plaintext highlighter-rouge">s2</code>, <code class="language-plaintext highlighter-rouge">pop s1 &gt;&gt;&gt; push s2</code> transfers elements atomically between the stacks,
+<code class="language-plaintext highlighter-rouge">pop s1 &lt;*&gt; pop s2</code> consumes elements atomically from both of the stacks, and
+<code class="language-plaintext highlighter-rouge">pop s1 &lt;+&gt; pop s2</code> consumes an element from either of the stacks. Importantly,
+the composition preserves the optimisations and blocking/signalling behaviours,
+allowing the users of the library to arbitrarily combine and extend the
+functionality without knowing about the underlying implementation.</p>
+
+<h2 id="feeding-the-philosophers">Feeding the philosophers</h2>
+
+<p>The parallel composition combinator provides an elegant way to solve the <a href="https://en.wikipedia.org/wiki/Dining_philosophers_problem">Dining
+Philosophers
+problem</a>. The problem
+imagines a set of philosophers seated around a circular table, forever
+alternating between thinking and eating. Forks are placed between adjacent
+philosophers, and each philosopher can only eat after obtaining both the left
+and right forks. The goal is to design a solution where no philosopher will
+starve. The problem highlights the issues of deadlock and fairness in concurrent
+programming.</p>
+
+<p>One way to solve this problem is to model each fork as a pair of endpoints, one
+for taking and another for dropping the fork.</p>
+
+<figure class="highlight"><pre><code class="language-ocaml" data-lang="ocaml"><span class="k">type</span> <span class="n">fork</span> <span class="o">=</span>
+  <span class="p">{</span><span class="n">drop</span> <span class="o">:</span> <span class="p">(</span><span class="kt">unit</span><span class="o">,</span><span class="kt">unit</span><span class="p">)</span> <span class="n">endpoint</span><span class="p">;</span>
+   <span class="n">take</span> <span class="o">:</span> <span class="p">(</span><span class="kt">unit</span><span class="o">,</span><span class="kt">unit</span><span class="p">)</span> <span class="n">endpoint</span><span class="p">}</span>
+
+<span class="k">let</span> <span class="n">mk_fork</span> <span class="bp">()</span> <span class="o">=</span>
+  <span class="k">let</span> <span class="n">drop</span><span class="o">,</span> <span class="n">take</span> <span class="o">=</span> <span class="n">mk_chan</span> <span class="bp">()</span> <span class="k">in</span>
+  <span class="p">{</span><span class="n">drop</span><span class="p">;</span> <span class="n">take</span><span class="p">}</span>
+
+<span class="k">let</span> <span class="n">drop</span> <span class="n">f</span> <span class="o">=</span> <span class="n">swap</span> <span class="n">f</span><span class="o">.</span><span class="n">drop</span>
+<span class="k">let</span> <span class="n">take</span> <span class="n">f</span> <span class="o">=</span> <span class="n">swap</span> <span class="n">f</span><span class="o">.</span><span class="n">take</span></code></pre></figure>
+
+<p>Now, the solution for a single round of eating can be implemented as follows:</p>
+
+<figure class="highlight"><pre><code class="language-ocaml" data-lang="ocaml"><span class="k">let</span> <span class="n">eat</span> <span class="n">l_fork</span> <span class="n">r_fork</span> <span class="o">=</span>
+  <span class="n">ignore</span> <span class="o">@@</span> <span class="n">run</span> <span class="p">(</span><span class="n">take</span> <span class="n">l_fork</span> <span class="o">&lt;*&gt;</span> <span class="n">take</span> <span class="n">r_fork</span><span class="p">)</span> <span class="bp">()</span><span class="p">;</span>
+  <span class="c">(* ...
+   * eat
+   * ... *)</span>
+  <span class="n">spawn</span> <span class="o">@@</span> <span class="n">run</span> <span class="p">(</span><span class="n">drop</span> <span class="n">l_fork</span><span class="p">);</span>
+  <span class="n">spawn</span> <span class="o">@@</span> <span class="n">run</span> <span class="p">(</span><span class="n">drop</span> <span class="n">r_fork</span><span class="p">)</span></code></pre></figure>
+
+<p>We use <code class="language-plaintext highlighter-rouge">take l_fork &lt;*&gt; take r_fork</code> to <em>atomically</em> take both of the forks.
+Reagents ensure that the protocol does not deadlock. After eating, we release
+the forks by spawning lightweight threads. In the next round, the philosophers
+race for the available forks. If the thread scheduler is fair, then the
+protocol provides fairness among the philosophers. The complete solution is
+available
+<a href="https://github.com/ocamllabs/reagents/blob/master/test/dining_philosophers.ml">here</a>.</p>
+
+<h2 id="implementation">Implementation</h2>
+
+<p>The key idea behind the implementation is that the reagent transaction executes
+in two phases. The first phase involves collecting all the compare-and-swap
+(CAS) operations necessary for the transaction, and the second phase is invoking
+a k-CAS operation (emulated in software). The failure to gather all the
+available CASes constitutes a permanent failure, causing the thread to explore
+other alternatives in the case of a selective communication or block otherwise.
+The failure in the second phase means that there is active interference from
+other concurrent threads, in which case the transaction is retried.</p>
+
+<p>Performance of the Reagents depends critically on having fine-grained control
+over threads and schedulers for implementing backoff loops, blocking and
+signalling. However, one of the main ideas of multicore OCaml is not to bake in
+the thread scheduler into the compiler but rather describe them as libraries. To
+this end, the reagents library is functorized over the following generic
+scheduler interface:</p>
+
+<figure class="highlight"><pre><code class="language-ocaml" data-lang="ocaml"><span class="k">module</span> <span class="k">type</span> <span class="nc">Scheduler</span> <span class="o">=</span> <span class="k">sig</span>
+  <span class="c">(* continuation *)</span>
+  <span class="k">type</span> <span class="k">'</span><span class="n">a</span> <span class="n">cont</span>
+  <span class="n">effect</span> <span class="nc">Suspend</span> <span class="o">:</span> <span class="p">(</span><span class="k">'</span><span class="n">a</span> <span class="n">cont</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span> <span class="n">option</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">'</span><span class="n">a</span>
+  <span class="n">effect</span> <span class="nc">Resume</span>  <span class="o">:</span> <span class="k">'</span><span class="n">a</span> <span class="n">cont</span> <span class="o">*</span> <span class="k">'</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="kt">unit</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>The interface itself only describes the scheduler’s effects, whose behaviour is
+defined by the
+<a href="http://kcsrk.info/ocaml/multicore/2015/05/20/effects-multicore/">handlers</a>.
+<code class="language-plaintext highlighter-rouge">perform (Suspend f)</code> applies <code class="language-plaintext highlighter-rouge">f</code> to the current continuation, and allows the
+Reagent library to stash the thread on the unavailable resource’s wait queue.
+The return type of <code class="language-plaintext highlighter-rouge">f</code> is an option to handle the case when the resource might
+have become available while suspending. If <code class="language-plaintext highlighter-rouge">f</code> returns <code class="language-plaintext highlighter-rouge">None</code>, then the control
+returns to the scheduler. Once the resource becomes available, the reagent
+library performs the <code class="language-plaintext highlighter-rouge">Resume</code> effect to resume the suspended thread.</p>
+
+<h2 id="comparison-to-stm">Comparison to STM</h2>
+
+<p>Reagents are less expressive than STM, which provides serializability. But in
+return, Reagents provide stronger progress guarantee (lock-freedom) over STM
+(obstruction-freedom)<sup id="fnref:stm" role="doc-noteref"><a href="#fn:stm" class="footnote" rel="footnote">2</a></sup>. A reagent transaction operating more than once on
+the same memory location will fail at runtime. Abstractly, this behaviour is
+disallowed since it cannot be represented as a k-CAS operation. Due to this
+restriction, the transaction <code class="language-plaintext highlighter-rouge">pop s1 &gt;&gt;&gt; push s1</code> always fails, and prohibits
+important patterns such as atomically pushing or popping multiple values from
+the same stack. I am currently working on extending the reagents semantics to
+relax this invariant. The resultant behaviour will be similar to a version of
+snapshot isolation. While this is weaker than serializability semantics offered
+by the STM, we will retain the benefit of lock-freedom.</p>
+
+<h2 id="contribute">Contribute!</h2>
+
+<p>Using the reagents library, we have implemented a collection of composable
+concurrent data and synchronization structures such as stacks, queues, countdown
+latches, reader-writer locks, condition variables, exchangers, atomic counters,
+etc. There is great opportunity here to build a standard library for
+fine-grained parallelism for Multicore OCaml, incorporating the latest
+developments in lock-free data structures. There is still work to be done
+optimising the implementation to remove allocations in the fast path, and
+fine-tuning the reagents core.</p>
+
+<p>Contributions to the <a href="https://github.com/ocamllabs/reagents">library</a> are most
+welcome, and is a great way to contribute to the Multicore OCaml effort. Please
+do file those issues and submit pull-requests.</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:lib" role="doc-endnote">
+      <p>Reagents is just a library, and you can implement your own <a href="https://en.wikipedia.org/wiki/Software_transactional_memory">favourite</a> <a href="http://research.microsoft.com/en-us/projects/revisions/">concurrent</a> <a href="http://www.kadix.ca/x10/doc/concepts/asyncfinishparallelism-1.html">programming</a> <a href="https://en.wikipedia.org/wiki/Fork%E2%80%93join_model">library</a>. <a href="#fnref:lib" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:stm" role="doc-endnote">
+      <p>And then there are <a href="http://www.acc.ncku.edu.tw/chinese/faculty/shulc/courses/adb/transactional-memory/notlockfree.pdf">good arguments</a> to why the semantics should be even weaker. <a href="#fnref:stm" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/offcputime/bpfcc/2024/07/24/offcputime-analysis/">
+            Off-CPU-time analysis
+            <small>24 Jul 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/gdb/2024/01/20/gdb-ocaml/">
+            Getting Started with GDB on OCaml
+            <small>20 Jan 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/prolog/jupyter/notebooks/2020/01/19/OCaml-Prolog-Jupyter/">
+            Teaching OCaml and Prolog through Jupyter Notebooks
+            <small>19 Jan 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+<hr>
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+</a>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">kcsrk dot info</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="http://kcsrk.info" property="cc:attributionName" rel="cc:attributionURL">KC Sivaramakrishnan</a>
+is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Quelea : A Haskell library for declarative programming over eventually consistent store (Cassandra).">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="/Quelea/stylesheets/stylesheet.css">
+
+    <title>Quelea</title>
+  </head>
+
+  <body>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kayceesrk/Quelea">View on GitHub</a>
+
+          <h1 id="project_title"><a href="/Quelea/index.html">Quelea</a></h1>
+          <h2 id="project_tagline">A Haskell library for declarative programming over eventually consistent store (Cassandra).</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/gowthamk/Quelea/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/gowthamk/Quelea/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+
+        <h2>Bank Account Benchmark</h2>
+<!-- p class="meta">11 Feb 2015</p -->
+
+<div class="post">
+<p>This benchmark implements a simple replicated BankAccount data type
+supporting three operations - <code>Deposit</code>, <code>Withdraw</code> and <code>GetBalance</code>.</p>
+
+<h3 id="building-the-benchmark">Building the Benchmark</h3>
+
+<p>Navigate to <code>~/git/quelea/tests/BankAccount</code>, and run <code>make</code>. On the
+stdout, along with GHC’s build information, you should find something
+similar to the following getting printed:</p>
+
+<p><img src="/Quelea/assets/ba-make.png" alt="ba-make" /></p>
+
+<p>The above lines indicate the consistency class for each Bank Account
+operation (i.e., ), along with
+the time taken to classify the operation, and also the total time
+consumed by the contract classification procedure. Similar information
+is also displayed for Bank Account transactions (namely, <code>saveTxn</code>,
+and <code>totalBalanceTxn</code>). Observe that compile-time overhead of
+classifying each operation is very low, and the total overhead of
+contract classification is roughly the sum of overheads incurred in
+each case.</p>
+
+<p>Succesfully building the benchmark results in four binaries -
+<code>BankAccount_EC</code>, <code>BankAccount_CC</code>, <code>BankAccount_SC</code>, and
+<code>BankAccount_Q</code>, that correspond to curves named <em>EC</em>, <em>CC</em>, <em>SC</em> and
+<em>Q</em> in the graph shown in Fig. 9(a) of our
+<a href="http://gowthamk.github.io/docs/quelea.pdf">paper</a>.</p>
+
+<h3 id="running-the-benchmark">Running the Benchmark</h3>
+
+<p>First, we run a basic experiment to measure latency and throughput,
+when a single client sends 1000 successive requests (with an
+inter-request delay of 1ms (1000 μs)). We take the measurements for
+each of the <em>EC</em>, <em>CC</em>, <em>SC</em>, and <em>Q</em> cases. Client requests are
+roughly 25% <code>getBalance</code>s, 25% <code>deposit</code>s, and 50% <code>withdraw</code>s. <em>EC</em>,
+<em>CC</em> and <em>SC</em> binaries run all operations under eventual, causal and
+strong consistency levels, respectively. On the other hand, the <em>Q</em>
+testcase runs operations at appropriate consistency levels as
+determined by the contract classification procedure. The commands to
+execute, and output generated in our sample runs are shown below.
+Please note that experiments can be terminated either manually (via
+<code>CTRL+C</code>), or by setting a hard time limit via <code>--terminateAfter</code>
+option, which accepts number of seconds as argument.</p>
+
+<h5 id="ec">EC</h5>
+
+<pre><code>./BankAccount_EC --kind Daemon --measureLatency --delayReq 1000 --numThreads 1 --numRounds 1000
+</code></pre>
+
+<p><img src="/Quelea/assets/ba-ec1.png" alt="ba-ec1" /></p>
+
+<p>Once you have aggregate latency and throughput data, terminate the
+experiment by pressing <code>CTRL-C</code>. If you have encountered an error, or
+if you suspect that execution is not making progress, please refer to
+the <a href="/Quelea/troubleshooting.html">troubleshooting guide</a>
+for quick fix.</p>
+
+<h5 id="cc">CC</h5>
+
+<pre><code>./BankAccount_CC --kind Daemon --measureLatency --delayReq 1000 --numThreads 1 --numRounds 1000
+</code></pre>
+
+<p><img src="/Quelea/assets/ba-cc1.png" alt="ba-cc1" /></p>
+
+<h5 id="sc">SC</h5>
+<pre><code>./BankAccount_SC --kind Daemon --measureLatency --delayReq 1000 --numThreads 1 --numRounds 1000
+</code></pre>
+
+<p><img src="/Quelea/assets/ba-sc1.png" alt="ba-sc1" /></p>
+
+<h5 id="q">Q</h5>
+
+<pre><code>./BankAccount_Q --kind Daemon --measureLatency --delayReq 1000 --numThreads 1 --numRounds 1000
+</code></pre>
+
+<p><img src="/Quelea/assets/ba-q1.png" alt="ba-q1" /></p>
+
+<p>The experiment can now be repeated varying the number of client
+threads (<code>--numThreads</code>) from 2 to 8. Screenshots capturing
+measurements for sample runs when <code>--numThreads</code> is 4 are shown below:</p>
+
+<h5 id="ec-1">EC</h5>
+
+<p><img src="/Quelea/assets/ba-ec2.png" alt="ba-ec2" /></p>
+
+<h5 id="cc-1">CC</h5>
+
+<p><img src="/Quelea/assets/ba-cc2.png" alt="ba-cc2" /></p>
+
+<h5 id="sc-1">SC</h5>
+
+<p><img src="/Quelea/assets/ba-sc2.png" alt="ba-sc2" /></p>
+
+<h5 id="q-1">Q</h5>
+
+<p><img src="/Quelea/assets/ba-q2.png" alt="ba-q2" /></p>
+
+<h3 id="observations">Observations</h3>
+
+<p>As shown in the sample runs, you should be able to observe that:</p>
+
+<ul>
+  <li>Throughput is highest when all operations are executed under
+eventual consistency (<em>EC</em>). Causal consistency (<em>CC</em>) throughput is
+comparable to that of <em>EC</em>. However, in both cases, <code>withdraw</code>
+operation can exhibit incorrect behaviour.</li>
+  <li>Throughput is lowest when all operations are executed under Strong
+Consistency (<em>SC</em>). </li>
+  <li>Testcase <code>BankAccount_Q</code>, which executes operations at appropriate
+consistency levels, delivers performance which is between the above
+two extremes.</li>
+</ul>
+
+
+</div>
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript">
+MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    });
+</script>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Quelea maintained by <a
+        href="https://github.com/kayceesrk">KC Sivaramakrishnan</a>
+        and <a
+        href="https://github.com/gowthamk">Gowtham Kaki</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+  </body>
+</html>

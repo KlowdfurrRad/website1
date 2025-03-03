@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Off-CPU-time analysis &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="post">
+  <h1 class="post-title">Off-CPU-time analysis</h1>
+  <span class="post-date">24 Jul 2024</span>
+  <p>Off-CPU analysis is where the program behavior when it is not running is
+recorded and analysed. See <a href="https://www.brendangregg.com/offcpuanalysis.html">Brendan Gregg’s eBPF based off-CPU
+analysis</a>. While on-CPU
+performance monitoring tools such as <code class="language-plaintext highlighter-rouge">perf</code> give you an idea of where the
+program is <em>actively</em> spending its time, they won’t tell you where the program
+is spending time <em>blocked</em> waiting for an action. Off-CPU analysis reveals
+information about where the program is spending time <em>passively</em>.</p>
+
+<!--more-->
+
+<h2 id="installation">Installation</h2>
+
+<p>Install the tools from <a href="https://github.com/iovisor/bcc/">https://github.com/iovisor/bcc/</a>.</p>
+
+<h2 id="enabling-frame-pointers">Enabling frame pointers</h2>
+
+<p>The off-CPU stack trace collection, <code class="language-plaintext highlighter-rouge">offcputime-bpfcc</code>, requires the programs to
+be compiled with frame pointers for full backtraces.</p>
+
+<h3 id="ocaml">OCaml</h3>
+
+<p>For OCaml, you’ll need a compiler variant with frame pointers enabled. If you
+are installing a released compiler using <code class="language-plaintext highlighter-rouge">opam</code>, you can create one the following 
+switch command <code class="language-plaintext highlighter-rouge">opam switch create 5.2.0+fp 5.2.0 ocaml-option-fp</code>. Change out 
+<code class="language-plaintext highlighter-rouge">5.2.0</code> for your preferred OCaml version.</p>
+
+<p>Instead, if you are building the OCaml compiler from source, <code class="language-plaintext highlighter-rouge">configure</code> the
+compiler with <code class="language-plaintext highlighter-rouge">--enable-frame-pointers</code> option:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./configure --enable-frame-pointers
+</code></pre></div></div>
+
+<p>Lastly, there is an option to create an opam switch with the development branch
+of the compiler. The instructions are in <code class="language-plaintext highlighter-rouge">ocaml/HACKING.adoc</code>. In order to
+create an opam switch from the current working directory, do:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ opam switch create . 'ocaml-option-fp' --working-dir
+</code></pre></div></div>
+
+<h2 id="glibc">glibc</h2>
+
+<p>The libc is not compiled with frame pointers by default. This will lead to many
+truncated stack traces. On Ubuntu, I did the following to get a glibc with frame
+pointers enabled:</p>
+
+<ol>
+  <li>Install glibc with frame pointers
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo apt install libc6-prof
+</code></pre></div>    </div>
+  </li>
+  <li>LD_PRELOAD the glibc with frame pointers
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ LD_PRELOAD=/lib/libc6-prof/x86_64-linux-gnu/libc.so.6 ./myapp.exe
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="running">Running</h2>
+
+<p>On one terminal run the program that you want to analyze:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ LD_PRELOAD=/lib/libc6-prof/x86_64-linux-gnu/libc.so.6 ./ocamlfoo.exe
+</code></pre></div></div>
+
+<p>On another terminal run <code class="language-plaintext highlighter-rouge">offcputime-bpfcc</code> tool:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo offcputime-bpfcc --stack-storage-size 2097152 -p $(pgrep -f ocamlfoo.exe) 10 &gt; offcputime.out
+</code></pre></div></div>
+
+<p>The command instruments the watches for 10s and the writes out the stack traces
+corresponding to blocking calls in <code class="language-plaintext highlighter-rouge">offcputime.out</code>. We use a large stack
+storage size argument so as to not lose stack traces. Otherwise, you will see
+many <code class="language-plaintext highlighter-rouge">[Missing User Stack]</code> errors in the back traces.</p>
+
+<h2 id="caveats">Caveats</h2>
+
+<p><code class="language-plaintext highlighter-rouge">offcputime-bpfcc</code> must run longer than the program being instrumented by a few
+seconds so that the function symbols are resolved. Otherwise you may see
+<code class="language-plaintext highlighter-rouge">[unknown]</code> in the backtrace for function names.</p>
+
+<h2 id="oddities">Oddities</h2>
+
+<p>I still see an order of magnitude difference between the maximum pauses observed
+using <code class="language-plaintext highlighter-rouge">offcputime-bpfcc</code> and <code class="language-plaintext highlighter-rouge">olly trace</code>. Something is off.</p>
+
+<h2 id="other-links">Other links</h2>
+
+<ul>
+  <li><a href="https://www.pingcap.com/blog/how-to-trace-linux-system-calls-in-production-with-minimal-impact-on-performance/">https://www.pingcap.com/blog/how-to-trace-linux-system-calls-in-production-with-minimal-impact-on-performance/</a></li>
+</ul>
+
+</div>
+
+<div class="related">
+  <h2>Related Posts</h2>
+  <ul class="related-posts">
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/gdb/2024/01/20/gdb-ocaml/">
+            Getting Started with GDB on OCaml
+            <small>20 Jan 2024</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/prolog/jupyter/notebooks/2020/01/19/OCaml-Prolog-Jupyter/">
+            Teaching OCaml and Prolog through Jupyter Notebooks
+            <small>19 Jan 2020</small>
+          </a>
+        </h3>
+      </li>
+    
+      <li>
+        <h3>
+          <a href="https://kcsrk.info/ocaml/multicore/job/2019/09/16/1115-multicore-job/">
+            Multicore OCaml Jobs
+            <small>16 Sep 2019</small>
+          </a>
+        </h3>
+      </li>
+    
+  </ul>
+</div>
+
+<hr>
+
+<a rel="license" href="http://creativecommons.org/licenses/by/4.0/">
+	<img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by/4.0/88x31.png" />
+</a>
+<span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">kcsrk dot info</span> by
+<a xmlns:cc="http://creativecommons.org/ns#" href="http://kcsrk.info" property="cc:attributionName" rel="cc:attributionURL">KC Sivaramakrishnan</a>
+is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Blog &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="page">
+  <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/offcputime/bpfcc/2024/07/24/offcputime-analysis/">
+        Off-CPU-time analysis
+      </a>
+    </h1>
+
+    <span class="post-date">24 Jul 2024</span>
+		<p>Off-CPU analysis is where the program behavior when it is not running is
+recorded and analysed. See <a href="https://www.brendangregg.com/offcpuanalysis.html">Brendan Gregg’s eBPF based off-CPU
+analysis</a>. While on-CPU
+performance monitoring tools such as <code class="language-plaintext highlighter-rouge">perf</code> give you an idea of where the
+program is <em>actively</em> spending its time, they won’t tell you where the program
+is spending time <em>blocked</em> waiting for an action. Off-CPU analysis reveals
+information about where the program is spending time <em>passively</em>.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/gdb/2024/01/20/gdb-ocaml/">
+        Getting Started with GDB on OCaml
+      </a>
+    </h1>
+
+    <span class="post-date">20 Jan 2024</span>
+		<p>A number of folks who regularly use OCaml were surprised to learn that you can
+reasonably debug OCaml programs using gdb. The aim of the post is to show the
+first steps in using gdb on OCaml programs.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/prolog/jupyter/notebooks/2020/01/19/OCaml-Prolog-Jupyter/">
+        Teaching OCaml and Prolog through Jupyter Notebooks
+      </a>
+    </h1>
+
+    <span class="post-date">19 Jan 2020</span>
+		<p>Last semester at IIT Madras, I taught a revamped core course <a href="http://kcsrk.info/cs3100_f19/">CS3100 Paradigms
+of Programming</a>, which introduces 3rd-year
+students to functional and logic programming paradigms. While the course had
+been traditionally offered in Lisp and Prolog, I introduced OCaml instead of
+Lisp. All of the lectures were delivered through interactive Jupyter
+notebooks. The assignments were also distributed as Jupyter notebooks and
+evaluated through autograder facility in Jupyter. There has since been several
+requests to replicate this setup elsewhere. Hence, I thought I should write
+about the set up and experience of teaching through Jupyter notebooks.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/multicore/job/2019/09/16/1115-multicore-job/">
+        Multicore OCaml Jobs
+      </a>
+    </h1>
+
+    <span class="post-date">16 Sep 2019</span>
+		<p>Multiple <strong>Research Software Engineer</strong> positions are available in the
+<a href="https://www.cse.iitm.ac.in/">Department of Computer Science and Engineering</a> at
+the <a href="https://www.iitm.ac.in/">Indian Institute of Technology, Madras</a> to develop
+<a href="https://github.com/ocaml-multicore/ocaml-multicore">Multicore OCaml</a> and enable
+<a href="https://tezos.com/">Tezos</a> ecosystem to benefit from Multicore OCaml.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/multicore/rr/2019/04/28/0000-rr-debugging/">
+        Deterministically debugging concurrent GC bugs with rr
+      </a>
+    </h1>
+
+    <span class="post-date">28 Apr 2019</span>
+		<p><a href="https://github.com/ocaml-multicore/ocaml-multicore">Multicore OCaml</a> comes with
+a <a href="http://kcsrk.info/multicore/gc/2017/07/06/multicore-ocaml-gc/">concurrent garbage
+collector</a>, where
+the garbage collector and the mutator threads run concurrently. Debugging
+concurrent GC bugs has been the most frustrating / satisfying (when fixed) part
+of Multicore OCaml development. <a href="https://rr-project.org/">rr</a>, a record and
+replay tool has made debugging concurrent GC bugs a sustainable exercise. In
+this short post, I’ll describe why.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/haskell/standard%20ml/f%23/2019/04/22/1600-ml-workshop-2019/">
+        ML Family Workshop 2019: Call for presentations
+      </a>
+    </h1>
+
+    <span class="post-date">22 Apr 2019</span>
+		<p>I am chairing the PC for ML family workshop this year. The PC is happy to invite
+submissions for the workshop to be held during the ICFP conference week on
+Thursday 22nd August 2019.</p>
+
+<p>ML family workshop invites submissions touching on the programming languages
+traditionally seen as part of the “ML family”. However, we are also keen to
+receive submissions from other related language groups. If you have questions
+about the suitability of your work for the workshop, please feel free to write
+an email.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/riscv/shakti/2019/03/29/1400-ocaml-baremetal-shakti/">
+        OCaml on Baremetal Shakti RISC-V processor
+      </a>
+    </h1>
+
+    <span class="post-date">29 Mar 2019</span>
+		<p>It has been 3 months since I joined <a href="https://www.iitm.ac.in/">IIT Madras</a> and it
+has been good fun so far. Along with the members of the <a href="http://rise.cse.iitm.ac.in/">RISE
+group</a>, we’ve initiated a project to build secure
+applications on top of secure extensions of the open-source
+<a href="http://shakti.org.in/">Shakti</a> RISC-V processor ecosystem. Unsurprisingly, my
+language of choice to build the applications is <a href="http://www.ocaml.org/">OCaml</a>.
+Given the availability of rich ecosystem of libraries under the
+<a href="https://mirage.io/">MirageOS</a> library operating system for building unikernels,
+we hope to minimise the amount of unsafe C code that the hardware has to contend
+with and protect exploits against. As a first step, we have managed to get OCaml
+programs to run on directly on top of the Shakti processor running in simulation
+under QEMU and Spike ISA simulators <em>without an intervening operating system</em>.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/multicore/ocaml/benchmarks/2018/09/13/1543-multicore-ci/">
+        Continuous Benchmarking &amp; Call for Benchmarks
+      </a>
+    </h1>
+
+    <span class="post-date">13 Sep 2018</span>
+		<p>Over the past few weeks, at <a href="http://ocamllabs.io/">OCaml Labs</a>, we’ve deployed
+continuous benchmarking infrastructure for <a href="https://github.com/ocamllabs/ocaml-multicore">Multicore
+OCaml</a>. Live results are available
+at <a href="http://ocamllabs.io/multicore">http://ocamllabs.io/multicore</a>. Continuous
+benchmarking has already enabled us to make <a href="https://github.com/ocamllabs/ocaml-multicore/pull/221">informed
+decisions</a> about the
+impact of our changes, and should come in handy over the next few months where
+we polish off and tune the multicore runtime.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/handlers/paper/2018/08/16/jfp-effect-handlers/">
+        JFP Special Issue on Algebraic Effects and Handlers
+      </a>
+    </h1>
+
+    <span class="post-date">16 Aug 2018</span>
+		<p><a href="http://www.andrej.com/">Andrej Bauer</a> and I are editing a special issue of JFP
+on the theory and practice of algebraic effects and handlers. The CfP is below.</p>
+
+<hr />
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/multicore/gc/2017/07/06/multicore-ocaml-gc/">
+        A deep dive into Multicore OCaml garbage collector
+      </a>
+    </h1>
+
+    <span class="post-date">06 Jul 2017</span>
+		<style>
+.annotslide{display:none}
+</style>
+
+<p>I recently gave a talk on the internals of multicore OCaml GC at Jane Street
+offices in NYC. The slides from the talk are available
+<a href="https://speakerdeck.com/kayceesrk/multicore-ocaml-gc">online</a>. But I felt that
+the slides alone aren’t particularly edifying. This post is basically the slides
+from the talk annotated with notes.</p>
+
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="https://kcsrk.info/blog/page2">Older</a>
+  
+  
+    <span class="pagination-item newer">Newer</span>
+  
+</div>
+
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>

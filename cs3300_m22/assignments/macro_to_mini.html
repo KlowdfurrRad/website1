@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>CS3300 Monsoon 2022: Assignment 01 - MacroJava to MiniJava</title>
+  <meta name="description" content="CS3300 Compiler Design @ CSE IIT Madras">
+
+  <link rel="stylesheet" href="/cs3300_m22/_css/main.css">
+  <link rel="canonical" href="http://kayceesrk.github.io/cs3300_m22/assignments/macro_to_mini">
+  <link rel="alternate" type="application/rss+xml" title="CS3300 Monsoon 2022" href="http://kayceesrk.github.io/cs3300_m22/feed.xml" />
+	<link rel="shortcut icon" href="/cs3300_m22/assets/favicon.ico">
+<link rel='stylesheet' id='open-sans-css'  href='//fonts.googleapis.com/css?family=Open+Sans%3A300italic%2C400italic%2C600italic%2C300%2C400%2C600&#038;subset=latin%2Clatin-ext&#038;ver=4.2.4' type='text/css' media='all' />
+<link href='https://fonts.googleapis.com/css?family=Titillium+Web:600italic,600,400,400italic' rel='stylesheet' type='text/css'>
+
+
+
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<meta property="og:image" content="http://course-website.svmiller.com/_images/stand-and-deliver-fb.jpg"/>
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/cs3300_m22/">CS3300 Monsoon 2022</a>
+
+
+    <nav class="site-nav">
+
+      <a href="#" class="menu-icon menu.open">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>  
+
+    <div class="trigger"><h1>Main Navigation</h1>
+
+ <ul class="menu">
+
+<!--          <li><a class="page-link" href="/cs3300_m22/"><i class="fa fa-home fa-lg"></i>Home</a></li> -->
+<li><a class="page-link" href="/cs3300_m22/schedule/"><i class="fa fa-list-ul fa-lg"></i> Schedule</a></li>
+<li><a class="page-link" href="/cs3300_m22/assignments/"><i class="fas fa-book"></i> Assignments</a></li>
+<li><a class="page-link" href="/cs3300_m22/resources/"><i class="fas fa-book-reader"></i> Resources</a></li>
+<li><a class="page-link" href="https://github.com/kayceesrk/cs3300_m22"><i class="fab fa-github"></i></a></li>
+<li><a class="page-link" href="http://kcsrk.info"><i class="fa fa-user fa-lg"></i></a></li>
+</ul>
+
+
+<!-- <ul class="menu">
+        <li> <a class="page-link" href="/about">About</a></li>
+        <li> <a class="page-link"  href="/blog">Blog</a>
+        <li> <a class="page-link" href="/blog">CV</a>
+        <li> <a class="page-link" href="/blog">For Students</a></li>
+        <li> <a class="page-link"  href="/blog">Research</a></a>
+        <li> <a class="page-link" href="/blog">Teaching</a>
+<ul class="sub-menu">
+	<li><a href="http://svmiller.com/teaching/posc-1020-introduction-to-international-relations/">POSC 1020 – Introduction to International Relations</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3410-quantitative-methods-in-political-science/">POSC 3410 – Quantitative Methods in Political Science</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3610-international-politics-in-crisis/">POSC 3610 – International Politics in Crisis</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3630-united-states-foreign-policy/">POSC 3630 – United States Foreign Policy</a></li>
+</ul></li>
+        <li> <a class="page-link" href="/blog">Miscellany</a>
+<ul class="sub-menu">
+	<li><a href="http://svmiller.com/teaching/posc-1020-introduction-to-international-relations/">Clean USAID Greenbook Data</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3410-quantitative-methods-in-political-science/">Journal of Peace Research *.bst File</a></li>
+	<li><a href="http://svmiller.com/teaching/posc-3610-international-politics-in-crisis/">My Custom Beamer Style</a></li>
+</ul> 
+
+</li>
+</ul> -->
+
+     </div>  
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Assignment 01 - MacroJava to MiniJava</h1>
+  </header>
+
+  <article class="post-content">
+    <p>The goal of this assignment is to write a MacroJava to MiniJava translator using
+Flex and Bison.</p>
+
+<h2 id="installation">Installation</h2>
+
+<h3 id="ubuntu">Ubuntu</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>apt <span class="nb">install </span>flex bison
+</code></pre></div></div>
+
+<h3 id="macos">macOS</h3>
+
+<p>I recommend installing through <a href="https://brew.sh/">Homebrew</a>. Install Homebrew
+first using the instructions on the Homebrew website and then:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>flex bison
+</code></pre></div></div>
+
+<h3 id="windows">Windows</h3>
+
+<p>Install</p>
+
+<ul>
+  <li><a href="https://ubuntu.com/tutorials/how-to-run-ubuntu-desktop-on-a-virtual-machine-using-virtualbox#1-overview">Ubuntu on VirtualBox</a> or</li>
+  <li><a href="https://ubuntu.com/wsl">Ubuntu on WSL</a></li>
+</ul>
+
+<p>Then follow instructions for Ubuntu.</p>
+
+<h2 id="submission-details">Submission details</h2>
+
+<p>Your submission should be named <code class="language-plaintext highlighter-rouge">&lt;YOUR-ROLLNO&gt;_P0.tar.gz</code> compressed file. For
+example, if your roll number is <code class="language-plaintext highlighter-rouge">cs20b220</code>, then the file should be named
+<code class="language-plaintext highlighter-rouge">cs20b220_P0.tar.gz</code>. The compressed gzip archive should contain a folder named
+<code class="language-plaintext highlighter-rouge">&lt;YOUR-ROLLNO&gt;_P0</code> with two files <strong>and nothing else</strong>. A Flex file named as
+<code class="language-plaintext highlighter-rouge">A1.l</code> and a Bison file named as <code class="language-plaintext highlighter-rouge">A1.y</code>.</p>
+
+<p>If <code class="language-plaintext highlighter-rouge">X.java</code> is a valid MacroJava program, then the following commands should
+generate the correct MiniJava code <code class="language-plaintext highlighter-rouge">Y.java</code>. Take input from standard input and
+write to standard output.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bison A1.y
+$ flex A1.l
+$ gcc A1.tab.c -lfl -o A1
+$ ./A1 &lt; X.java &gt; Y.java
+</code></pre></div></div>
+
+<p>If the X.java file is not a valid MacroJava program, then output</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ ./A1 &lt; X.java
+//Failed to parse input code
+</code></pre></div></div>
+
+<h3 id="useful-commands-for-assignment-submission">Useful commands for assignment submission</h3>
+
+<p>Assume that you have a folder called <code class="language-plaintext highlighter-rouge">cs20b220_P0</code> with the solution files. For
+assignment 1, this will contain just the Flex and the Bison files.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">ls </span>cs20b220_P0
+A1.l A1.y
+</code></pre></div></div>
+
+<p>You can create a compressed archive (specifically a <code class="language-plaintext highlighter-rouge">.tar.gz</code> file) as
+follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">tar </span>cvzf cs20b220_P0.tar.gz cs20b220_P0 
+a cs20b220_P0
+a cs20b220_P0/A1.y
+a cs20b220_P0/A1.l
+<span class="nv">$ </span>file cs20b220_P0.tar.gz 
+cs20b220_P0.tar.gz.: <span class="nb">gzip </span>compressed data, last modified: ....
+</code></pre></div></div>
+
+<p>You can uncompress the archive as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tar </span>xvzf cs20b220_P0.tar.gz
+x cs20b220_P0/
+x cs20b220_P0/A1.y
+x cs20b220_P0/A1.l
+</code></pre></div></div>
+
+<h2 id="macrojava">MacroJava</h2>
+
+<p>MacroJava is a subset of Java extended with C style macros. The meaning of a
+MacroJava program is given by its meaning as a Java program (after macro
+processing). Overloading is not allowed in MacroJava. The MacroJava statement
+<code class="language-plaintext highlighter-rouge">System.out.println( ... );</code> can only print integers. The MacroJava expression
+<code class="language-plaintext highlighter-rouge">e1 &amp;&amp; e2</code> is of type boolean, and both <code class="language-plaintext highlighter-rouge">e1</code> and <code class="language-plaintext highlighter-rouge">e2</code> must be of type boolean.
+MacroJava supports both inline as well as C style comments, but does not support
+nested comments.</p>
+
+<p>Some sample MacroJava programs can be found <a href="https://github.com/kayceesrk/cs3300_m22/tree/main/assignments/01_macro_to_mini/macro_java_examples">here</a>.</p>
+
+<h3 id="specification">Specification</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>              Goal ::= (MacroDefinition)* MainClass ( TypeDeclaration )* &lt;EOF&gt;
+         MainClass ::= class Identifier { public static void main ( String [] Identifier ) { System.out.println ( Expression ); } }
+   TypeDeclaration ::= class Identifier { ( Type Identifier ;)* ( MethodDeclaration )* }
+                     | class Identifier extends Identifier { ( Type Identifier;)* ( MethodDeclaration )* }
+ MethodDeclaration ::= public Type Identifier ( ( Type Identifier (, Type Identifier)*)? ) { ( Type Identifier ;)* ( Statement )* return Expression ; }
+             Type  ::= int [ ]
+                     | boolean
+                     | int
+                     | Identifier
+         Statement ::= { ( Statement )* }
+                     | System.out.println ( Expression );
+                     | Identifier = Expression ;
+                     | Identifier [ Expression ] = Expression ;
+                     | if ( Expression ) Statement
+                     | if ( Expression ) Statement else Statement
+                     | while ( Expression ) Statement
+                     | Identifier ( (Expression (, Expression )*)?); /* Macro stmt call */
+        Expression ::= PrimaryExpression &amp;&amp; PrimaryExpression
+                     | PrimaryExpression || PrimaryExpression
+                     | PrimaryExpression != PrimaryExpression
+                     | PrimaryExpression &lt;= PrimaryExpression
+                     | PrimaryExpression + PrimaryExpression
+                     | PrimaryExpression - PrimaryExpression
+                     | PrimaryExpression * PrimaryExpression
+                     | PrimaryExpression / PrimaryExpression
+                     | PrimaryExpression [ PrimaryExpression ]
+                     | PrimaryExpression . length
+                     | PrimaryExpression
+                     | PrimaryExpression . Identifier ( (Expression (, Expression )*)? )
+                     | Identifier ( (Expression (, Expression )*)? )/* Macro expr call */
+ PrimaryExpression ::= Integer
+                     | true
+                     | false
+                     | Identifier
+                     | this
+                     | new int [ Expression ]
+                     | new Identifier ( )
+                     | ! Expression
+                     | ( Expression )
+   MacroDefinition ::= MacroDefExpression
+                     | MacroDefStatement
+ MacroDefStatement ::= #defineStmt Identifier (Identifier , Identifier, Identifier (, Identifier )*? ) { ( Statement )* }/* More than 2 arguments */
+                     | #defineStmt0 Identifier () { ( Statement )* }
+                     | #defineStmt1 Identifier ( Identifier ) { ( Statement )* }
+                     | #defineStmt2 Identifier (Identifier , Identifier ) { ( Statement )* }
+MacroDefExpression ::= #defineExpr Identifier (Identifier , Identifier, Identifier (, Identifier )*? ) ( Expression ) /* More than 2 arguments */
+                     | #defineExpr0 Identifier () ( Expression )
+                     | #defineExpr1 Identifier ( Identifier ) ( Expression )
+                     | #defineExpr2 Identifier (Identifier , Identifier ) ( Expression )
+        Identifier ::= &lt;IDENTIFIER&gt;
+           Integer ::= &lt;INTEGER_LITERAL&gt;
+</code></pre></div></div>
+
+<h2 id="minijava">MiniJava</h2>
+
+<p>MiniJava is a subset of Java. The meaning of a MiniJava program is given by its
+meaning as a Java program. Overloading is not allowed in MiniJava. The MiniJava
+statement <code class="language-plaintext highlighter-rouge">System.out.println( ... );</code> can only print integers. The MiniJava
+expression <code class="language-plaintext highlighter-rouge">e1 &amp;&amp; e2</code> is of type boolean, and both <code class="language-plaintext highlighter-rouge">e1</code> and <code class="language-plaintext highlighter-rouge">e2</code> must be of type
+boolean.</p>
+
+<p>Some sample MiniJava programs can be found <a href="https://github.com/kayceesrk/cs3300_m22/tree/main/assignments/01_macro_to_mini/mini_java_examples">here</a>.</p>
+
+<h3 id="specification-1">Specification</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>                     Goal ::= MainClass ( TypeDeclaration )* &lt;EOF&gt;
+                MainClass ::= "class" Identifier "{" "public" "static" "void" "main" "(" "String" "[" "]" Identifier ")" "{" PrintStatement "}" "}"
+          TypeDeclaration ::= ClassDeclaration
+                            | ClassExtendsDeclaration
+         ClassDeclaration ::= "class" Identifier "{" ( VarDeclaration )* ( MethodDeclaration )* "}"
+  ClassExtendsDeclaration ::= "class" Identifier "extends" Identifier "{" ( VarDeclaration )* ( MethodDeclaration )* "}"
+           VarDeclaration ::= Type Identifier ";"
+        MethodDeclaration ::= AccessType Type Identifier "(" ( FormalParameterList )? ")" "{" ( VarDeclaration )* ( Statement )* "return" Expression ";" "}"
+      FormalParameterList ::= FormalParameter ( FormalParameterRest )*
+          FormalParameter ::= Type Identifier
+      FormalParameterRest ::= "," FormalParameter
+                     Type ::= ArrayType
+                            | BooleanType
+                            | IntegerType
+                            | Identifier
+               AccessType ::= PublicType
+                            | PrivateType
+                            | ProtectedType
+                ArrayType ::= "int" "[" "]"
+              BooleanType ::= "boolean"
+              IntegerType ::= "int"
+               PublicType ::= "public"
+             PrivatedType ::= "private"
+            ProtectedType ::= "protected"
+                Statement ::= Block
+                            | AssignmentStatement
+                            | ArrayAssignmentStatement
+                            | IfStatement
+                            | WhileStatement
+                            | PrintStatement
+                    Block ::= "{" ( Statement )* "}"
+      AssignmentStatement ::= Identifier "=" Expression ";"
+ ArrayAssignmentStatement ::= Identifier "[" Expression "]" "=" Expression ";"
+              IfStatement ::= IfthenElseStatement
+                            | IfthenStatement
+          IfthenStatement ::= "if" "(" Expression ")" Statement
+      IfthenElseStatement ::= "if" "(" Expression ")" Statement "else" Statement
+           WhileStatement ::= "while" "(" Expression ")" Statement
+           PrintStatement ::= "System.out.println" "(" Expression ")" ";"
+               Expression ::= OrExpression
+                            | AndExpression
+                            | CompareExpression
+                            | neqExpression
+                            | PlusExpression
+                            | MinusExpression
+                            | TimesExpression
+                            | DivExpression
+                            | ArrayLookup
+                            | ArrayLength
+                            | MessageSend
+                            | TernaryExpression
+                            | PrimaryExpression
+            AndExpression ::= PrimaryExpression "&amp;&amp;" PrimaryExpression
+             OrExpression ::= PrimaryExpression "||" PrimaryExpression
+        CompareExpression ::= PrimaryExpression "&lt;=" PrimaryExpression
+            neqExpression ::= PrimaryExpression "!=" PrimaryExpression
+           PlusExpression ::= PrimaryExpression "+" PrimaryExpression
+          MinusExpression ::= PrimaryExpression "-" PrimaryExpression
+          TimesExpression ::= PrimaryExpression "*" PrimaryExpression
+            DivExpression ::= PrimaryExpression "/" PrimaryExpression
+              ArrayLookup ::= PrimaryExpression "[" PrimaryExpression "]"
+              ArrayLength ::= PrimaryExpression "." "length"
+              MessageSend ::= PrimaryExpression "." Identifier "(" ( ExpressionList )? ")"
+        TernaryExpression ::= PrimaryExpression "?" PrimaryExpression ":" PrimaryExpression
+           ExpressionList ::= Expression ( ExpressionRest )*
+           ExpressionRest ::= "," Expression
+        PrimaryExpression ::= IntegerLiteral
+                            | TrueLiteral
+                            | FalseLiteral
+                            | Identifier
+                            | ThisExpression
+                            | ArrayAllocationExpression
+                            | AllocationExpression
+                            | NotExpression
+                            | BracketExpression
+           IntegerLiteral ::= &lt;INTEGER_LITERAL&gt;
+              TrueLiteral ::= "true"
+             FalseLiteral ::= "false"
+               Identifier ::= &lt;IDENTIFIER&gt;
+           ThisExpression ::= "this"
+ArrayAllocationExpression ::= "new" "int" "[" Expression "]"
+     AllocationExpression ::= "new" Identifier "(" ")"
+            NotExpression ::= "!" Expression
+        BracketExpression ::= "(" Expression ")"
+           IdentifierList ::= Identifier ( IdentifierRest )*
+           IdentifierRest ::= "," Identifier
+</code></pre></div></div>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+<!--     <h2 class="footer-heading">CS3300 Monsoon 2022</h2> -->
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li><strong>CS3300 Monsoon 2022</strong></li>
+			<li></li>
+          <li><a href="mailto:kcsrk@cse.iitm.ac.in">kcsrk@cse.iitm.ac.in</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+ 
+
+         <p class="text">
+Department of Computer Science and Engineering<br />
+SSB 401, Indian Institute of Technology, Madras<br />
+Chennai, India 600036<br />
+
+      </div>
+
+      <div class="footer-col  footer-col-3">
+       <ul class="social-media-list">
+     
+
+          
+  <li>
+    <a href="https://github.com/kayceesrk/cs3300_m22">
+      <i class="fab fa-github" style="color:gray"></i> kayceesrk/cs3300_m22
+    </a>
+  </li>
+
+
+          
+  <li>
+    <a href="https://twitter.com/kc_srk">
+      <i class="fab fa-twitter" style="color:gray"></i> kc_srk
+    </a>
+  </li>
+
+
+          
+
+          
+
+          
+  <li>
+    <a href="http://kcsrk.info">
+      <i class="fas fa-globe" style="color:gray"></i> kcsrk.info
+    </a>
+  </li>
+
+
+
+
+       
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+  </body>
+
+</html>
+<!-- d.s.m.s.050600.062508.030515.080516.030818 | "Baby, I'm Yours" -->

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+  <head>
+  <link href="http://gmpg.org/xfn/11" rel="profile">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+  <!-- Enable responsiveness on mobile devices-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>
+    
+      Blog &middot; KC Sivaramakrishnan
+    
+  </title>
+
+  <!-- CSS -->
+	<link type="text/css" href="https://kcsrk.info/styles/gantt.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/poole.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/syntax.css">
+  <link rel="stylesheet" href="https://kcsrk.info/public/css/lanyon.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=PT+Serif:400,400italic,700%7CPT+Sans:400">
+
+  <!-- Icons -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://kcsrk.info/public/apple-touch-icon-precomposed.png">
+  <link rel="shortcut icon" href="https://kcsrk.info/public/favicon.ico">
+
+  <!-- RSS -->
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml">
+
+	<!-- Google Analytics -->
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+		_gaq.push(['_setAccount', 'UA-12988407-1']);
+		_gaq.push(['_trackPageview']);
+
+		(function() {
+		 var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		 })();
+	</script>
+</head>
+
+
+	<body class="sidebar-overlay theme-base-08">
+
+    <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
+     styles, `#sidebar-checkbox` for behavior. -->
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+
+
+<!-- Toggleable sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-item">
+    <p>KC Sivaramakrishnan</p>
+  </div>
+
+  <nav class="sidebar-nav">
+		<a class="sidebar-nav-item" href="https://kcsrk.info">About</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/publications">Publications</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/teaching">Teaching</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/advising">Advising</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/blog">Blog</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/talks">Talks</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/calendar">Calendar</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/books">Books</a>
+		<a class="sidebar-nav-item" href="https://kcsrk.info/timeline">Timeline</a>
+  </nav>
+
+  <div class="sidebar-item">
+    <p>
+      &copy; 2008 - 2025. All rights reserved.
+    </p>
+  </div>
+</div>
+
+
+    <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
+         content to avoid any CSS collisions with our real content. -->
+    <div class="wrap">
+      <div class="masthead">
+        <div class="container">
+          <h3 class="masthead-title">
+            <a href="/" title="Home">KC Sivaramakrishnan</a>
+            <small>CTO @ Tarides</small>
+          </h3>
+        </div>
+      </div>
+
+      <div class="container content">
+        <div class="page">
+  <div class="posts">
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/multicore/reflection/monads/effects/2017/06/13/monadic-reflections-on-concurrency/">
+        (Monadic) Reflections on Concurrency
+      </a>
+    </h1>
+
+    <span class="post-date">13 Jun 2017</span>
+		<p>We recently published a paper on <a href="http://kcsrk.info/papers/system_effects_feb_18.pdf">concurrent system programming with effect
+handlers</a>. In this paper, we show
+that with the help of effect handlers, we could express in <em>direct-style</em>,
+various interactions of a concurrent program with OS services that typically
+require callbacks. The question is what do we do about legacy code that uses
+monadic concurrency libraries such as Lwt and Async. Surely a wholesale rewrite
+of all Lwt and Async code is a no go. This post is an exploration of some ideas
+to make Lwt and Async compatible with direct-style code.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/opam/topkg/carcass/2017/03/05/building-and-publishing-an-OCaml-package/">
+        Building and Publishing an OCaml Package: Q1 2017
+      </a>
+    </h1>
+
+    <span class="post-date">05 Mar 2017</span>
+		<p>One of the key indicators of maturity of a language ecosystem is the ease of
+building, managing and publishing software packages in that language. OCaml
+platform has made steady progress in the last few years to this end. While
+<a href="https://opam.ocaml.org/">OPAM</a> simplified package (and compiler) management,
+the developing and publishing packages remained a constant pain point. This
+situation has remarkably improved recently with the
+<a href="http://erratique.ch/software/topkg">Topkg</a> and
+<a href="https://github.com/dbuenzli/carcass">Carcass</a>. This post provides a short
+overview of my workflow for building and publishing an OCaml package using Topkg
+and Carcass.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/irmin/crdt/2017/02/15/an-easy-interface-to-irmin-library/">
+        Ezirmin : An easy interface to the Irmin library
+      </a>
+    </h1>
+
+    <span class="post-date">15 Feb 2017</span>
+		<p><a href="https://github.com/kayceesrk/ezirmin">Ezirmin</a> is an easy interface over the
+<a href="https://github.com/mirage/irmin">Irmin</a>, a library database for building
+persistent mergeable data structures based on the principles of Git. In this
+post, I will primarily discuss the Ezirmin library, but also discuss some of the
+finer technical details of mergeable data types implemented over Irmin.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/types/2016/06/30/behavioural-types/">
+        Behavioural types
+      </a>
+    </h1>
+
+    <span class="post-date">30 Jun 2016</span>
+		<p>Behavioural types such as session types, contracts and choreography describe the
+behaviour of a software entity as a sequence of <em>operations</em> on a resource such
+as a communication channel, web service session or a file descriptor.
+Behavioural types capture well-defined interactions, which are enforced
+statically with the help of type system machinery. In this post, I will describe
+a lightweight embedding of behavioural types in OCaml using polymorphic variants
+through a series of examples. The complete source code for the examples is
+available
+<a href="https://github.com/kayceesrk/code-snippets/blob/master/behavior.ml">here</a>.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/multicore/2016/06/11/lock-free/">
+        Lock-free programming for the masses
+      </a>
+    </h1>
+
+    <span class="post-date">11 Jun 2016</span>
+		<p>Efficient concurrent programming libraries are essential for taking advantage of
+fine-grained parallelism on multicore hardware. In this post, I will introduce
+<a href="https://github.com/ocamllabs/reagents"><em>reagents</em></a>, a composable, lock-free
+concurrency library for expressing fine-grained parallel programs on <a href="https://github.com/ocamllabs/ocaml-multicore/wiki">Multicore
+OCaml</a>. Reagents offer a
+high-level DSL for experts to specify efficient concurrency libraries, but also
+allows the consumers of the libraries to extend them further without knowing the
+details of the underlying implementation.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/reason/arm/2016/05/16/armed-with-reason/">
+        Armed with Reason
+      </a>
+    </h1>
+
+    <span class="post-date">16 May 2016</span>
+		<p>This is a short tutorial on how to build
+<a href="http://facebook.github.io/reason/">Reason</a> apps for an ARM target with the help
+of Docker. I am using <a href="https://blog.docker.com/2016/03/docker-for-mac-windows-beta/">Docker for
+Mac</a>, which is
+still under beta program. Using Docker for development has two important
+advantages over traditional cross-compilation. First, the Reason toolchain comes
+packaged as a Docker image and hence no local installation is necessary.
+Secondly, cross-compilers are often tricky to get right. Docker for Mac comes
+with multiarch support and hence removes the need for traditional
+cross-compilation.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/profiling/2015/10/27/profiling-the-stack/">
+        Profiling the stack
+      </a>
+    </h1>
+
+    <span class="post-date">27 Oct 2015</span>
+		<p>In the <a href="http://kcsrk.info/ocaml/profiling/2015/09/23/bytecode-allocation-profiler/">last
+post</a>,
+I described a <em>flat</em> allocation profiler for OCaml 4.02 bytecode interpreter.
+In this post, I’ll describe further developments which add support for call
+stack information and better location information. Lets dive straight to the
+usage:</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/profiling/2015/09/23/bytecode-allocation-profiler/">
+        An Allocation Profiler for OCaml Bytecode Interpreter
+      </a>
+    </h1>
+
+    <span class="post-date">23 Sep 2015</span>
+		<p>This post describes a simple flat allocation profiler for OCaml 4.02 bytecode
+interpreter.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/multicore/opam/ocaml/2015/09/10/ocaml-experimental-compilers/">
+        Experiment with OCaml Multicore and Algebraic Effects
+      </a>
+    </h1>
+
+    <span class="post-date">10 Sep 2015</span>
+		<p>I recently gave a talk on Algebraic Effects in OCaml at the <a href="https://ocaml.org/meetings/ocaml/2015/">OCaml Workshop
+2015</a>. The extended abstract and the
+slides from the talk are available <a href="http://kcsrk.info/#ocaml15">here</a>. The slides
+should provide a gentle introduction to programming with algebraic effects and
+handlers in OCaml. The examples from the talk (and many more!) are available
+<a href="https://github.com/kayceesrk/ocaml-eff-example">here</a>.</p>
+
+
+  </div>
+  
+  <div class="post">
+    <h1 class="post-title">
+      <a href="/ocaml/multicore/effects/2015/05/27/more-effects/">
+        Pearls of Algebraic Effects and Handlers
+      </a>
+    </h1>
+
+    <span class="post-date">27 May 2015</span>
+		<p>In the <a href="http://kcsrk.info/ocaml/multicore/2015/05/20/effects-multicore/">previous
+post</a>, I
+presented a simple cooperative multithreaded scheduler written using algebraic
+effects and their handlers. Algebraic effects are of course useful for
+expressing other forms of effectful computations. In this post, I will present
+a series of simple examples to illustrate the utility of algebraic effects and
+handlers in OCaml. Some of the examples presented here were borrowed from the
+excellent paper on Eff programming language<sup id="fnref:Eff" role="doc-noteref"><a href="#fn:Eff" class="footnote" rel="footnote">1</a></sup>. All of the examples
+presented below are available
+<a href="https://github.com/kayceesrk/ocaml-eff-example">here</a>.</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:Eff" role="doc-endnote">
+      <p><a href="http://arxiv.org/pdf/1203.1539v1.pdf">Programming with Algebraic Effects and Handlers (pdf)</a> <a href="#fnref:Eff" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+  </div>
+  
+</div>
+
+<div class="pagination">
+  
+    <a class="pagination-item older" href="https://kcsrk.info/blog/page3">Older</a>
+  
+  
+    
+      <a class="pagination-item newer" href="https://kcsrk.info/blog">Newer</a>
+    
+  
+</div>
+
+
+</div>
+
+      </div>
+    </div>
+
+    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+    <script>
+      (function(document) {
+        var toggle = document.querySelector('.sidebar-toggle');
+        var sidebar = document.querySelector('#sidebar');
+        var checkbox = document.querySelector('#sidebar-checkbox');
+
+        document.addEventListener('click', function(e) {
+          var target = e.target;
+
+          if(!checkbox.checked ||
+             sidebar.contains(target) ||
+             (target === checkbox || target === toggle)) return;
+
+          checkbox.checked = false;
+        }, false);
+      })(document);
+    </script>
+  </body>
+</html>
